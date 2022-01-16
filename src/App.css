@@ -1,5 +1,14 @@
+html,
+body,
+#root {
+  height: 100%;
+  background-color: #121212;
+}
+
 .App {
   text-align: center;
+  height: 100%;
+  overflow: auto;
 }
 
 .App-logo {
@@ -35,4 +44,75 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.home-header {
+  width: 100%;
+  padding-top: 1px;
+  padding-bottom: 1px;
+  background-color: lightblue;
+}
+
+.home-body {
+  margin-left: 100px;
+  margin-top: 100px;
+}
+
+.track {
+  display: flex;
+  flex-direction: row;
+  margin-top: 50px;
+}
+
+.bar {
+  display: flex;
+  flex-direction: row;
+  flex-shrink: 0;
+  flex-grow: 1;
+  border-left: 2px solid #ba97e7;
+}
+
+.bar-col {
+  flex-grow: 1;
+}
+
+.slot {
+  height: 23px;
+  line-height: 23px;
+  min-width: 16px;
+
+  /* outline: 4px 4px 4px 4px solid black; */
+  /* box-shadow: inset -2px -2px 0 5px red, inset 0 0 0 10px black; */
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    transparent calc(50% - 1px),
+    #bb97e744 calc(50% - 1px),
+    #bb97e744 calc(50% + 1px),
+    transparent calc(50% + 1px),
+    transparent 100%
+  );
+}
+
+@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Dongle&family=Roboto&display=swap");
+.slot-text {
+  /* font-family: "Dongle", sans-serif; */
+  font-family: "Roboto", sans-serif;
+  font-size: 16px;
+  background-color: #121212;
+  color: rgba(255, 255, 255, 0.95);
+  user-select: none;
+  text-align: center;
+}
+
+.slot:focus-within {
+  background-color: #bb97e7;
+  border-radius: 4px;
+  outline: none;
+}
+
+.slot:focus-within > .slot-text {
+  background-color: transparent;
+  color: #c3e797;
 }
