@@ -3,7 +3,7 @@ import "./App.css";
 import Track from "./components/Track";
 import { useEffect, useState } from "react";
 import store from "./redux/store";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { writeNote, clearNote } from "./redux/noteMap";
 
 function shiftBar(forward = true) {
@@ -49,6 +49,8 @@ function shiftFocusBy(i) {
 
 function App() {
   const dispatch = useDispatch();
+  const notesPerBar = useSelector((state) => state.config.notesPerBar);
+  const numberOfBars = useSelector((state) => state.config.numberOfBars);
 
   useEffect(() => {
     window.addEventListener("keydown", (e) => {
@@ -108,9 +110,18 @@ function App() {
 
   return (
     <div className="App">
-      <div className="home-body">
+      <div
+        className="home-body"
+        style={{
+          display: "grid",
+          gridTemplateColumns: `repeat(${numberOfBars * notesPerBar}, 20px)`,
+          gridTemplateRows: `repeat(${2}, 200px)`,
+        }}
+      >
         <Track track={0}></Track>
         <Track track={1}></Track>
+
+        {/* <Track track={1}></Track> */}
       </div>
     </div>
   );
