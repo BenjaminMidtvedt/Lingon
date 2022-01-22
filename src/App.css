@@ -80,6 +80,7 @@ body,
   height: 23px;
   line-height: 23px;
   min-width: 16px;
+  padding: 1px;
 
   /* outline: 4px 4px 4px 4px solid black; */
   /* box-shadow: inset -2px -2px 0 5px red, inset 0 0 0 10px black; */
