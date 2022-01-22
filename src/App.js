@@ -72,15 +72,23 @@ function App() {
             stopProp = true;
           }
         } else if (e.code === "ArrowRight") {
-          if (e.ctrlKey) {
+          if (!e.altKey && e.ctrlKey) {
             shiftBar(true);
+          } else if (e.altKey && e.ctrlKey) {
+            shiftFocusBy(6 * 4);
+          } else if (e.altKey && !e.ctrlKey) {
+            shiftFocusBy(6 * 2);
           } else {
             shiftFocusBy(6);
           }
           stopProp = true;
         } else if (e.code === "ArrowLeft") {
-          if (e.ctrlKey) {
+          if (!e.altKey && e.ctrlKey) {
             shiftBar(false);
+          } else if (e.altKey && e.ctrlKey) {
+            shiftFocusBy(-6 * 4);
+          } else if (e.altKey && !e.ctrlKey) {
+            shiftFocusBy(-6 * 2);
           } else {
             shiftFocusBy(-6);
           }

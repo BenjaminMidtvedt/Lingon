@@ -79,7 +79,7 @@ body,
 }
 
 .bar-start {
-  border-left: 2px solid #ba97e7;
+  border-left: 2.4px solid #ba97e7;
 }
 
 .slot {
@@ -93,10 +93,10 @@ body,
   background: linear-gradient(
     to bottom,
     transparent 0%,
-    transparent calc(50% - 1px),
-    #bb97e744 calc(50% - 1px),
-    #bb97e744 calc(50% + 1px),
-    transparent calc(50% + 1px),
+    transparent calc(50% - 1.11px),
+    #bb97e744 calc(50% - 1.11px),
+    #bb97e744 calc(50% + 1.11px),
+    transparent calc(50% + 1.11px),
     transparent 100%
   );
 }
@@ -108,10 +108,10 @@ body,
   background: linear-gradient(
     to bottom,
     transparent 0%,
-    transparent calc(50% - 1px),
-    #bb97e760 calc(50% - 1px),
-    #bb97e760 calc(50% + 1px),
-    transparent calc(50% + 1px),
+    transparent calc(50% - 1.11px),
+    #bb97e760 calc(50% - 1.11px),
+    #bb97e760 calc(50% + 1.11px),
+    transparent calc(50% + 1.11px),
     transparent 100%
   );
 }
@@ -123,10 +123,10 @@ body,
   background: linear-gradient(
     to bottom,
     transparent 0%,
-    transparent calc(50% - 1px),
-    #bb97e773 calc(50% - 1px),
-    #bb97e773 calc(50% + 1px),
-    transparent calc(50% + 1px),
+    transparent calc(50% - 1.11px),
+    #bb97e773 calc(50% - 1.11px),
+    #bb97e773 calc(50% + 1.11px),
+    transparent calc(50% + 1.11px),
     transparent 100%
   );
 }
