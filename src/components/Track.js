@@ -8,7 +8,9 @@ import { connect } from "react-redux";
 const scale = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
 
 function Slot({ track = 0, row = 0, col = 0, bar = 0 }) {
-  const value = useSelector((state) => state.noteMap[[track, bar, col, row]]);
+  const value = useSelector(
+    (state) => state.noteMap.present[track][[col, row]]
+  );
   return (
     <div
       track={track}
@@ -31,15 +33,15 @@ function Bar({ track, bar }) {
   cols = cols.map((_, i) => (
     <div
       className={`track-col ${i === 0 ? "bar-start" : ""}`}
-      style={{ gridRow: track + 1, gridColumn: bar * 16 + i + 1 }}
+      style={{ gridRow: track + 2, gridColumn: bar * 16 + i + 1 }}
       key={`${track}-${bar * notesPerBar + i}`}
     >
-      <Slot track={track} bar={bar} row={0} col={i}></Slot>
-      <Slot track={track} bar={bar} row={1} col={i}></Slot>
-      <Slot track={track} bar={bar} row={2} col={i}></Slot>
-      <Slot track={track} bar={bar} row={3} col={i}></Slot>
-      <Slot track={track} bar={bar} row={4} col={i}></Slot>
-      <Slot track={track} bar={bar} row={5} col={i}></Slot>
+      <Slot track={track} bar={bar} row={0} col={bar * notesPerBar + i}></Slot>
+      <Slot track={track} bar={bar} row={1} col={bar * notesPerBar + i}></Slot>
+      <Slot track={track} bar={bar} row={2} col={bar * notesPerBar + i}></Slot>
+      <Slot track={track} bar={bar} row={3} col={bar * notesPerBar + i}></Slot>
+      <Slot track={track} bar={bar} row={4} col={bar * notesPerBar + i}></Slot>
+      <Slot track={track} bar={bar} row={5} col={bar * notesPerBar + i}></Slot>
     </div>
   ));
   return <>{cols}</>;

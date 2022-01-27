@@ -5,10 +5,17 @@ import { useEffect, useState } from "react";
 import store from "./redux/store";
 import { useDispatch, useSelector } from "react-redux";
 import { writeNote, clearNote } from "./redux/noteMap";
+import { ActionCreators } from "redux-undo";
+import { playNote, playTrackColumn } from "./audio/context";
+import {
+  setFocusedColumn,
+  setFocusedRow,
+  setFocusedTrack,
+} from "./redux/config";
 
 function shiftBar(forward = true) {
   //add all elements we want to include in our selection
-
+  const notesPerBar = store.getState().config.notesPerBar;
   if (document.activeElement) {
     const row = parseInt(document.activeElement.attributes.row.value);
     const slots = Array.from(document.getElementsByClassName("slot"));
@@ -22,8 +29,8 @@ function shiftBar(forward = true) {
         .slice(elemIndex + 1, -1)
         .findIndex(
           (e) =>
-            parseInt(e.attributes.col.value) === 0 &&
-            parseInt(e.attributes.row.value) === row
+            parseInt(e.attributes.col.value) % notesPerBar === 0 &&
+            parseInt(e.attributes.row.value) % notesPerBar === row
         ) +
       elemIndex +
       1;
@@ -47,20 +54,54 @@ function shiftFocusBy(i) {
   }
 }
 
+function updateFocus(dispatch) {
+  const active_el = document.activeElement;
+
+  let row = parseInt(active_el?.attributes?.row?.value);
+  let col = parseInt(active_el?.attributes?.col?.value);
+  let track = parseInt(active_el?.attributes?.track?.value);
+
+  dispatch(setFocusedColumn(col));
+  dispatch(setFocusedRow(row));
+  dispatch(setFocusedTrack(track));
+}
+
 function App() {
   const dispatch = useDispatch();
   const notesPerBar = useSelector((state) => state.config.notesPerBar);
   const numberOfBars = useSelector((state) => state.config.numberOfBars);
 
   useEffect(() => {
+    window.addEventListener("click", (e) => {
+      updateFocus(dispatch);
+    });
+
     window.addEventListener("keydown", (e) => {
       const active_el = document.activeElement;
-      if (active_el.classList.contains("slot")) {
+      let stopProp = false;
+      if (
+        (e.key === "z" || e.key === "Z") &&
+        e.ctrlKey &&
+        !e.shiftKey &&
+        !e.altKey
+      ) {
+        stopProp = true;
+        dispatch(ActionCreators.undo());
+      } else if (
+        (e.key === "z" || e.key === "Z") &&
+        e.ctrlKey &&
+        e.shiftKey &&
+        !e.altKey
+      ) {
+        dispatch(ActionCreators.redo());
+        stopProp = true;
+      } else if (active_el.classList.contains("slot")) {
         // Active element is a slot
 
-        const row = parseInt(active_el.attributes.row.value);
+        let row = parseInt(active_el.attributes.row.value);
+        let col = parseInt(active_el.attributes.col.value);
+        let track = parseInt(active_el.attributes.track.value);
 
-        let stopProp = false;
         if (e.code === "ArrowDown") {
           if (row < 5) {
             shiftFocusBy(1);
@@ -94,18 +135,16 @@ function App() {
           }
           stopProp = true;
         } else {
-          const col = parseInt(active_el.attributes.col.value);
-          const bar = parseInt(active_el.attributes.bar.value);
-          const track = parseInt(active_el.attributes.track.value);
           dispatch(
             writeNote({
-              id: [track, bar, col, row],
+              id: [track, col, row],
               note: e.key,
             })
           );
-
           // stopProp = true;
         }
+
+        updateFocus(dispatch);
 
         if (stopProp) {
           e.stopPropagation();
@@ -116,6 +155,8 @@ function App() {
     });
   }, []);
 
+  const numberOfTracks = useSelector((state) => state.noteMap.present.length);
+
   return (
     <div className="App">
       <div
@@ -123,16 +164,50 @@ function App() {
         style={{
           display: "grid",
           gridTemplateColumns: `repeat(${numberOfBars * notesPerBar}, 20px)`,
-          gridTemplateRows: `repeat(${2}, 200px)`,
+          gridTemplateRows: `50px repeat(${2}, 200px)`,
         }}
       >
+        <Beat />
         <Track track={0}></Track>
-        <Track track={1}></Track>
 
         {/* <Track track={1}></Track> */}
       </div>
     </div>
   );
+}
+
+function Beat() {
+  const numberOfBars = useSelector((state) => state.config.numberOfBars);
+  const notesPerBar = useSelector((state) => state.config.notesPerBar);
+  const col = useSelector((state) => state.config.focusedColumn);
+
+  const beats = Array(numberOfBars * notesPerBar)
+    .fill(0)
+    .map((_, i) => {
+      let in_bar_beat = i % notesPerBar;
+      let sub_beat = in_bar_beat % 4;
+
+      let beat_size = 7;
+      if (sub_beat === 2) beat_size = 10;
+      if (sub_beat === 0) beat_size = 15;
+      if (in_bar_beat === 0) beat_size = 20;
+
+      return (
+        <div
+          key={i}
+          style={{
+            margin: "auto",
+            marginTop: 0,
+            width: 2,
+            height: beat_size,
+            backgroundColor: col === i ? "#b6ec4b" : "white",
+            gridColumn: 1 + i,
+            gridRow: 1,
+          }}
+        ></div>
+      );
+    });
+  return <>{beats}</>;
 }
 
 export default App;
