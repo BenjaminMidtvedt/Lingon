@@ -159,12 +159,15 @@ function App() {
 
   return (
     <div className="App">
+      <Lingon />
       <div
         className="home-body"
         style={{
           display: "grid",
-          gridTemplateColumns: `repeat(${numberOfBars * notesPerBar}, 20px)`,
-          gridTemplateRows: `50px repeat(${2}, 200px)`,
+          gridTemplateColumns: `repeat(${
+            numberOfBars * notesPerBar
+          }, fit-content(25px)`,
+          gridTemplateRows: `50px auto`,
         }}
       >
         <Beat />
@@ -208,6 +211,10 @@ function Beat() {
       );
     });
   return <>{beats}</>;
+}
+
+function Lingon() {
+  return <span className="lingon">Lingon</span>;
 }
 
 export default App;

@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Alegreya+Sans+SC:wght@100;300;400&family=Julius+Sans+One&family=Roboto&display=swap");
 html,
 body,
 #root {
@@ -55,7 +56,7 @@ body,
 
 .home-body {
   margin-left: 100px;
-  margin-top: 100px;
+  margin-top: 160px;
 }
 
 .track {
@@ -85,7 +86,7 @@ body,
 .slot {
   height: 23px;
   line-height: 23px;
-  min-width: 16px;
+  min-width: 15px;
   padding: 1px;
 
   /* outline: 4px 4px 4px 4px solid black; */
@@ -131,12 +132,22 @@ body,
   );
 }
 
-@import url("https://fonts.googleapis.com/css2?family=Roboto&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Dongle&family=Roboto&display=swap");
+.lingon {
+  font-family: "Alegreya Sans SC", sans-serif;
+  font-size: 60px;
+  font-weight: 200;
+  letter-spacing: 8px;
+  color: white;
+  position: fixed;
+  left: 100px;
+  top: 20px;
+}
+
 .slot-text {
   /* font-family: "Dongle", sans-serif; */
   font-family: "Roboto", sans-serif;
   font-size: 16px;
+  margin: 1px;
   background-color: #121212;
   color: rgba(255, 255, 255, 0.95);
   user-select: none;
