@@ -13,6 +13,8 @@ import {
   setFocusedTrack,
 } from "./redux/config";
 
+import { PlayArrow, Stop } from "@mui/icons-material";
+
 function shiftBar(forward = true) {
   //add all elements we want to include in our selection
   const notesPerBar = store.getState().config.notesPerBar;
@@ -174,6 +176,22 @@ function App() {
         <Track track={0}></Track>
 
         {/* <Track track={1}></Track> */}
+      </div>
+      <Overlay />
+    </div>
+  );
+}
+
+function Overlay() {
+  return (
+    <div className="overlay">
+      <div className="overlay-inner">
+        <div className="overlay-button play-button">
+          <PlayArrow />
+        </div>
+        <div className="overlay-button stop-button">
+          <Stop />
+        </div>
       </div>
     </div>
   );

@@ -1,9 +1,13 @@
 @import url("https://fonts.googleapis.com/css2?family=Alegreya+Sans+SC:wght@100;300;400&family=Julius+Sans+One&family=Roboto&display=swap");
 html,
-body,
-#root {
+body {
   height: 100%;
   background-color: #121212;
+}
+
+#root {
+  background: linear-gradient(25deg, #121212, #2a2530) no-repeat;
+  height: 100%;
 }
 
 .App {
@@ -45,13 +49,6 @@ body,
   to {
     transform: rotate(360deg);
   }
-}
-
-.home-header {
-  width: 100%;
-  padding-top: 1px;
-  padding-bottom: 1px;
-  background-color: lightblue;
 }
 
 .home-body {
@@ -163,4 +160,56 @@ body,
 .slot:focus-within > .slot-text {
   background-color: transparent;
   color: #c3e797;
+}
+
+.overlay {
+  position: fixed;
+  bottom: 100px;
+  width: 100%;
+  height: 70px;
+}
+
+.overlay-inner {
+  height: 70px;
+  width: 400px;
+  background-color: #ba97e70c;
+  box-shadow: #121212 6px 10px 12px 5px;
+  margin: auto;
+  border-radius: 35px;
+  border: 2px solid #bb97e7;
+  overflow: hidden;
+  display: flex;
+}
+
+.overlay-button {
+  flex-grow: 1;
+  height: 100%;
+  /* border-left: 1px #121212a0 solid; */
+  line-height: 70px;
+  /* font-size: 35px; */
+}
+
+.overlay-button:first-child {
+  border-left: none;
+}
+
+.overlay-button:hover {
+  background-color: #bb97e7;
+}
+
+.overlay-button:active {
+  background-color: #bb97e7a0;
+}
+
+.overlay-button > svg {
+  font-size: 40px !important;
+  margin-top: 15px;
+}
+
+.play-button > svg {
+  fill: #b6ec4b !important;
+}
+
+.stop-button > svg {
+  fill: #ed4643 !important;
 }
