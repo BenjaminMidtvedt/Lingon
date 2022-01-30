@@ -155,15 +155,29 @@ body {
   text-align: center;
 }
 
-.slot:focus-within {
-  background-color: #bb97e7;
-  border-radius: 4px;
-  outline: none;
+@keyframes focus-indicator {
+  0% {
+    background-color: #bb97e7;
+    color: #c3e797;
+  }
+  48% {
+    background-color: #bb97e7;
+    color: #c3e797;
+  }
+  52% {
+    background-color: transparent;
+    color: white;
+  }
+  96% {
+    background-color: transparent;
+    color: white;
+  }
 }
 
-.slot:focus-within > .slot-text {
-  background-color: transparent;
-  color: #c3e797;
+.slot:focus-within {
+  animation: focus-indicator 1.5s infinite;
+  border-radius: 6px;
+  outline: none;
 }
 
 .overlay {
