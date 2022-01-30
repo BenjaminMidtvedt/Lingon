@@ -81,9 +81,9 @@ body {
 }
 
 .slot {
-  height: 23px;
-  line-height: 23px;
-  min-width: 15px;
+  height: 21px;
+  line-height: 19px;
+  min-width: 14px;
   padding: 1px;
 
   /* outline: 4px 4px 4px 4px solid black; */
@@ -129,6 +129,10 @@ body {
   );
 }
 
+.slot-row-nobg {
+  background: transparent;
+}
+
 .lingon {
   font-family: "Alegreya Sans SC", sans-serif;
   font-size: 60px;
@@ -144,8 +148,8 @@ body {
   /* font-family: "Dongle", sans-serif; */
   font-family: "Roboto", sans-serif;
   font-size: 16px;
-  margin: 1px;
-  background-color: #121212;
+  margin: 2px;
+  /* background-color: #121212; */
   color: rgba(255, 255, 255, 0.95);
   user-select: none;
   text-align: center;

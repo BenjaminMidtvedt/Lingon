@@ -42,7 +42,7 @@ export const noteMap = createSlice({
 
         playingNotes = playTrackColumn(track, column);
       } else if (characters.includes(note)) {
-        track[index] = note;
+        track[index] = note.trim();
       }
     },
     clearNote: (state, { id, note }) => {

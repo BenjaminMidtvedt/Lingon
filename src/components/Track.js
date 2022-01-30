@@ -18,7 +18,7 @@ function Slot({ track = 0, row = 0, col = 0, bar = 0 }) {
       col={col}
       bar={bar}
       tabIndex="0"
-      className={`slot slot-row-${row}`}
+      className={`slot slot-row-${row} ${value ? "slot-row-nobg" : ""}`}
     >
       <span className={"slot-text"}>{value}</span>
     </div>
