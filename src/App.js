@@ -19,7 +19,12 @@ import {
   setSelectionEnd,
   setSelectionStart,
 } from "./redux/selection";
-import { keypressHandler, updateFocus } from "./redux/handlers";
+import {
+  getActiveIndex,
+  getSelectionStartEnd,
+  keypressHandler,
+  updateFocus,
+} from "./redux/handlers";
 
 function shiftFocusBy(i) {
   //add all elements we want to include in our selection
@@ -128,19 +133,37 @@ function App() {
         <Selection></Selection>
         {/* <Track track={1}></Track> */}
       </div>
-      <Overlay onPlay={Play} />
+      <Overlay
+        onPlay={() => {
+          Play(store.getState().selection.end);
+        }}
+      />
     </div>
   );
 }
 
 function Overlay({ onPlay = undefined, onStop = undefined }) {
   return (
-    <div className="overlay">
+    <div
+      className="overlay"
+      onMouseDown={(e) => {
+        e.stopPropagation();
+      }}
+    >
       <div className="overlay-inner">
-        <div onClick={() => onPlay?.()} className="overlay-button play-button">
+        <div
+          onClick={() => onPlay?.()}
+          tabIndex={-1}
+          disabled
+          className="overlay-button play-button"
+        >
           <PlayArrow />
         </div>
-        <div onClick={() => onStop?.()} className="overlay-button stop-button">
+        <div
+          onClick={() => onStop?.()}
+          disabled
+          className="overlay-button stop-button"
+        >
           <Stop />
         </div>
       </div>

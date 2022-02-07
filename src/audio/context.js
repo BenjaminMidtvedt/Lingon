@@ -53,7 +53,7 @@ export function playTrackColumn(track, column) {
   return notes;
 }
 
-export function Play(tracks, start = 0) {
+export function Play(start = 0) {
   const allNotes = [];
   const playingNotes = Array(7);
   const { noteMap } = store.getState();
