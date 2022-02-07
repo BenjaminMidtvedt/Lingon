@@ -131,8 +131,10 @@ function App() {
         let focusedCol = document.activeElement.attributes.col?.value;
         if (focusedCol !== undefined) {
           let dif = parseInt(selectionEnd) - focusedCol;
-          shiftFocusBy(6 * dif);
-          updateFocus(dispatch);
+          if (dif !== 0) {
+            shiftFocusBy(6 * dif);
+            updateFocus(dispatch);
+          }
         }
       }
     });
