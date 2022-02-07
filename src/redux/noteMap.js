@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { playNote, playTrackColumn } from "../audio/context";
+import { getActiveIndex } from "./handlers";
 import { loadState } from "./utils";
 
 const notes = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
@@ -27,7 +28,7 @@ export const noteMap = createSlice({
         let digit = parseInt(note);
 
         if (isNaN(digit)) {
-          state[id] = undefined;
+          track[index] = "";
           return;
         }
 
@@ -51,9 +52,27 @@ export const noteMap = createSlice({
     clearNote: (state, { id, note }) => {
       state[id] = undefined;
     },
+
+    clearRange: (state, { payload }) => {
+      let { start, end } = payload;
+      if (end < start) {
+        let tmp = end;
+        end = start;
+        start = tmp;
+      }
+      const [track, _col, _row] = getActiveIndex();
+      console.log("inside", start, end);
+      for (let col = start; col < end; col++) {
+        for (let row = 0; row < 6; row++) {
+          console.log(col, row);
+          state[track][[col, row]] = "";
+        }
+      }
+      return state;
+    },
   },
 });
 
-export const { writeNote, clearNote } = noteMap.actions;
+export const { writeNote, clearNote, clearRange } = noteMap.actions;
 
 export default noteMap.reducer;

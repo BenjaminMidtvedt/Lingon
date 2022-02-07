@@ -19,6 +19,7 @@ import {
   setSelectionEnd,
   setSelectionStart,
 } from "./redux/selection";
+import { keypressHandler } from "./redux/handlers";
 
 function shiftBar(forward = true) {
   //add all elements we want to include in our selection
@@ -139,92 +140,7 @@ function App() {
       }
     });
 
-    window.addEventListener("keydown", (e) => {
-      const active_el = document.activeElement;
-      let stopProp = false;
-      if (
-        (e.key === "z" || e.key === "Z") &&
-        e.ctrlKey &&
-        !e.shiftKey &&
-        !e.altKey
-      ) {
-        stopProp = true;
-        dispatch(ActionCreators.undo());
-      } else if (
-        (e.key === "z" || e.key === "Z") &&
-        e.ctrlKey &&
-        e.shiftKey &&
-        !e.altKey
-      ) {
-        dispatch(ActionCreators.redo());
-        stopProp = true;
-      } else if (active_el.classList.contains("slot")) {
-        // Active element is a slot
-
-        let row = parseInt(active_el.attributes.row.value);
-        let col = parseInt(active_el.attributes.col.value);
-        let track = parseInt(active_el.attributes.track.value);
-
-        if (e.code === "ArrowDown") {
-          if (row < 5) {
-            shiftFocusBy(1);
-            stopProp = true;
-          }
-        } else if (e.code === "ArrowUp") {
-          if (row > 0) {
-            shiftFocusBy(-1);
-            stopProp = true;
-          }
-        } else if (e.code === "ArrowRight") {
-          if (!e.altKey && e.ctrlKey) {
-            shiftBar(true);
-          } else if (e.altKey && e.ctrlKey) {
-            shiftFocusBy(6 * 4);
-          } else if (e.altKey && !e.ctrlKey) {
-            shiftFocusBy(6 * 2);
-          } else {
-            shiftFocusBy(6);
-          }
-          stopProp = true;
-        } else if (e.code === "ArrowLeft") {
-          if (!e.altKey && e.ctrlKey) {
-            shiftBar(false);
-          } else if (e.altKey && e.ctrlKey) {
-            shiftFocusBy(-6 * 4);
-          } else if (e.altKey && !e.ctrlKey) {
-            shiftFocusBy(-6 * 2);
-          } else {
-            shiftFocusBy(-6);
-          }
-          stopProp = true;
-        } else {
-          dispatch(
-            writeNote({
-              id: [track, col, row],
-              note: e.key,
-            })
-          );
-          // stopProp = true;
-        }
-
-        updateFocus(dispatch);
-
-        if (stopProp) {
-          if (!e.shiftKey) {
-            dispatch(clearSelection());
-          } else {
-            const newCol = document.activeElement.attributes?.col?.value;
-            if (newCol !== undefined) {
-              dispatch(setSelectionEnd(parseInt(newCol)));
-            }
-          }
-
-          e.stopPropagation();
-          e.stopImmediatePropagation();
-          e.preventDefault();
-        }
-      }
-    });
+    window.addEventListener("keydown", (e) => keypressHandler(e, dispatch));
   }, []);
 
   const numberOfTracks = useSelector((state) => state.noteMap.present.length);
@@ -314,6 +230,7 @@ function Selection() {
     end = start;
     start = tmp;
   }
+  start = Math.max(start, 0);
   return (
     <div
       style={{
