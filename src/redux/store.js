@@ -3,8 +3,10 @@ import logger from "redux-logger";
 import noteMapReducer from "./noteMap";
 import config from "./config";
 import undoable from "redux-undo";
+import noteMap from "./noteMap";
+import { saveState } from "./utils";
 
-export default configureStore(
+const store = configureStore(
   {
     reducer: {
       noteMap: undoable(noteMapReducer),
@@ -13,3 +15,11 @@ export default configureStore(
   },
   [logger]
 );
+
+store.subscribe(() => {
+  let state = store.getState();
+  state = { ...state, noteMap: state.noteMap.present };
+  saveState(state);
+});
+
+export default store;

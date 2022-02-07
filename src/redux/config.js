@@ -1,10 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { loadState } from "./utils";
 
 // const notes = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", " "];
 
+const storedState = loadState();
+
 export const config = createSlice({
   name: "config",
-  initialState: {
+  initialState: storedState?.config || {
     notesPerBar: 16,
     numberOfBars: 16,
     focusedColumn: 0,
@@ -26,8 +29,6 @@ export const config = createSlice({
     },
   },
 });
-
-// export const { writeNote, clearNote } = noteMap.actions;
 
 export const { setFocusedColumn, setFocusedRow, setFocusedTrack } =
   config.actions;

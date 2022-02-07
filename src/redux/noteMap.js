@@ -1,14 +1,17 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { playNote, playTrackColumn } from "../audio/context";
+import { loadState } from "./utils";
 
 const notes = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"];
 const characters = [" ", "*"];
 
 let playingNotes = [];
 
+const initialState = loadState();
+
 export const noteMap = createSlice({
   name: "noteMap",
-  initialState: [
+  initialState: initialState?.noteMap || [
     {
       tuning: [50, 55, 60, 65, 69, 74].reverse(),
     },
