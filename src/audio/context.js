@@ -7,9 +7,7 @@ const audioContext = new AudioContext();
 export function createNote(key) {
   const oscillator = audioContext.createOscillator();
 
-  // oscillator.type = "square";
   const freq = 440 * Math.pow(2, (key - 79) / 12);
-  console.log("playing: ", freq);
   oscillator.frequency.setValueAtTime(freq, audioContext.currentTime); // value in hertz
 
   return oscillator;
@@ -52,4 +50,47 @@ export function playTrackColumn(track, column) {
   });
 
   return notes;
+}
+
+export function Play(tracks, start = 0) {
+  const allNotes = [];
+  const playingNotes = Array(7);
+  const { noteMap } = store.getState();
+
+  const startTime = audioContext.currentTime;
+  let endTime = startTime;
+
+  noteMap.present.forEach((track) => {
+    const { tuning } = track;
+
+    const gainNode = audioContext.createGain();
+    gainNode.connect(audioContext.destination);
+    gainNode.gain.value = 1 / 8;
+
+    Object.entries(track)
+      .filter(([key, _]) => key.includes(","))
+      .map(([key, val]) => [...key.split(","), val])
+      .filter(([col, row, val]) => col >= start && val !== "")
+      .sort(([col, row, val], [col2, row2, val2]) => col - col2)
+      .forEach(([col, row, val]) => {
+        const time = startTime + ((col - start) / 120 / 4) * 60;
+
+        playingNotes[row]?.stop?.(time);
+        // playingNotes[row] = undefined;
+
+        if (val === "*") {
+          playingNotes[row] = undefined;
+          console.log("Should stop", row, "at", time, playingNotes);
+          return;
+        }
+
+        const note = createNote(val + tuning[row]);
+        note.connect(gainNode);
+        playingNotes[row] = note;
+        note.start(time);
+
+        endTime = Math.max(time, endTime);
+      });
+    playingNotes.forEach((v) => v?.stop?.(endTime + 1));
+  });
 }

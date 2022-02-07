@@ -149,6 +149,7 @@ body {
   font-family: "Roboto", sans-serif;
   font-size: 16px;
   margin: 2px;
+  margin-left: 3px;
   /* background-color: #121212; */
   color: rgba(255, 255, 255, 0.95);
   user-select: none;
@@ -160,17 +161,22 @@ body {
     background-color: #bb97e7;
     color: #c3e797;
   }
-  48% {
+  47% {
     background-color: #bb97e7;
     color: #c3e797;
   }
-  52% {
+  53% {
     background-color: transparent;
     color: white;
   }
-  96% {
+  94% {
     background-color: transparent;
     color: white;
+  }
+
+  100% {
+    background-color: #bb97e7;
+    color: #c3e797;
   }
 }
 

@@ -6,7 +6,7 @@ import store from "./redux/store";
 import { useDispatch, useSelector } from "react-redux";
 import { writeNote, clearNote } from "./redux/noteMap";
 import { ActionCreators } from "redux-undo";
-import { playNote, playTrackColumn } from "./audio/context";
+import { Play, playNote, playTrackColumn } from "./audio/context";
 import {
   setFocusedColumn,
   setFocusedRow,
@@ -177,19 +177,19 @@ function App() {
 
         {/* <Track track={1}></Track> */}
       </div>
-      <Overlay />
+      <Overlay onPlay={Play} />
     </div>
   );
 }
 
-function Overlay() {
+function Overlay({ onPlay = undefined, onStop = undefined }) {
   return (
     <div className="overlay">
       <div className="overlay-inner">
-        <div className="overlay-button play-button">
+        <div onClick={() => onPlay?.()} className="overlay-button play-button">
           <PlayArrow />
         </div>
-        <div className="overlay-button stop-button">
+        <div onClick={() => onStop?.()} className="overlay-button stop-button">
           <Stop />
         </div>
       </div>
