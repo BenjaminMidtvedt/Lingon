@@ -5,6 +5,7 @@ import config from "./config";
 import undoable from "redux-undo";
 import noteMap from "./noteMap";
 import { saveState } from "./utils";
+import { throttle } from "lodash";
 
 const store = configureStore(
   {
@@ -16,10 +17,12 @@ const store = configureStore(
   [logger]
 );
 
-store.subscribe(() => {
-  let state = store.getState();
-  state = { ...state, noteMap: state.noteMap.present };
-  saveState(state);
-});
+store.subscribe(
+  throttle(() => {
+    let state = store.getState();
+    state = { ...state, noteMap: state.noteMap.present };
+    saveState(state);
+  }, 500)
+);
 
 export default store;
