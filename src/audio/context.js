@@ -6,6 +6,7 @@ const audioContext = new AudioContext();
 
 export function createNote(key) {
   const oscillator = audioContext.createOscillator();
+  // console.log(key);
 
   const freq = 440 * Math.pow(2, (key - 79) / 12);
   oscillator.frequency.setValueAtTime(freq, audioContext.currentTime); // value in hertz
@@ -70,21 +71,22 @@ export function Play(tracks, start = 0) {
     Object.entries(track)
       .filter(([key, _]) => key.includes(","))
       .map(([key, val]) => [...key.split(","), val])
-      .filter(([col, row, val]) => col >= start && val !== "")
+      .filter(
+        ([col, row, val]) => col >= start && val !== "" && val !== undefined
+      )
       .sort(([col, row, val], [col2, row2, val2]) => col - col2)
       .forEach(([col, row, val]) => {
         const time = startTime + ((col - start) / 120 / 4) * 60;
-
         playingNotes[row]?.stop?.(time);
-        // playingNotes[row] = undefined;
 
         if (val === "*") {
           playingNotes[row] = undefined;
-          console.log("Should stop", row, "at", time, playingNotes);
           return;
         }
 
-        const note = createNote(val + tuning[row]);
+        let key = val + tuning[row];
+        if (key === undefined || isNaN(key)) return;
+        const note = createNote(key);
         note.connect(gainNode);
         playingNotes[row] = note;
         note.start(time);
