@@ -19,36 +19,7 @@ import {
   setSelectionEnd,
   setSelectionStart,
 } from "./redux/selection";
-import { keypressHandler } from "./redux/handlers";
-
-function shiftBar(forward = true) {
-  //add all elements we want to include in our selection
-  const notesPerBar = store.getState().config.notesPerBar;
-  if (document.activeElement) {
-    const row = parseInt(document.activeElement.attributes.row.value);
-    const slots = Array.from(document.getElementsByClassName("slot"));
-    if (!forward) {
-      slots.reverse();
-    }
-    const elemIndex = slots.indexOf(document.activeElement);
-
-    let index =
-      slots
-        .slice(elemIndex + 1, -1)
-        .findIndex(
-          (e) =>
-            parseInt(e.attributes.col.value) % notesPerBar === 0 &&
-            parseInt(e.attributes.row.value) % notesPerBar === row
-        ) +
-      elemIndex +
-      1;
-
-    if (index > -1) {
-      var nextElement = slots[index] || document.activeElement;
-      nextElement.focus();
-    }
-  }
-}
+import { keypressHandler, updateFocus } from "./redux/handlers";
 
 function shiftFocusBy(i) {
   //add all elements we want to include in our selection
@@ -62,18 +33,6 @@ function shiftFocusBy(i) {
   }
 }
 
-function updateFocus(dispatch) {
-  const active_el = document.activeElement;
-
-  let row = parseInt(active_el?.attributes?.row?.value);
-  let col = parseInt(active_el?.attributes?.col?.value);
-  let track = parseInt(active_el?.attributes?.track?.value);
-
-  dispatch(setFocusedColumn(col));
-  dispatch(setFocusedRow(row));
-  dispatch(setFocusedTrack(track));
-}
-
 function App() {
   const dispatch = useDispatch();
   const notesPerBar = useSelector((state) => state.config.notesPerBar);
@@ -82,11 +41,16 @@ function App() {
   useEffect(() => {
     let selectionStart = 0;
     let selectionEnd = 0;
-    let selectionTrack = 0;
     let ismousedown = false;
     let gridPositions = [];
     window.addEventListener("click", (e) => {
-      updateFocus(dispatch);
+      try {
+        updateFocus(e, dispatch, true);
+      } catch (e) {
+        if (!(e instanceof TypeError)) {
+          throw e; // re-throw the error unchanged
+        }
+      }
     });
 
     window.addEventListener("mousedown", (e) => {
@@ -95,7 +59,6 @@ function App() {
         e.target.classList.contains("slot");
       ismousedown = onTrack;
       if (onTrack) {
-        let idx = 0;
         let slots = Array.from(document.getElementsByClassName("slot"));
         gridPositions = slots
           .filter(
@@ -117,6 +80,8 @@ function App() {
         dispatch(setSelectionEnd(selectionEnd));
 
         console.log(selectionStart);
+      } else {
+        dispatch(clearSelection());
       }
     });
 
@@ -134,7 +99,7 @@ function App() {
           let dif = parseInt(selectionEnd) - focusedCol;
           if (dif !== 0) {
             shiftFocusBy(6 * dif);
-            updateFocus(dispatch);
+            updateFocus(e, dispatch, true);
           }
         }
       }

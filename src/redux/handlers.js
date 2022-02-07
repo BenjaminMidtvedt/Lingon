@@ -1,6 +1,6 @@
 import { setFocusedColumn, setFocusedRow, setFocusedTrack } from "./config";
-import { clearRange, writeNote } from "./noteMap";
-import { ActionCreators } from "redux-undo";
+import { clearRange, writeNote, writeSlice } from "./noteMap";
+import { ActionCreators, GroupByFunction } from "redux-undo";
 import {
   clearSelection,
   setSelectionEnd,
@@ -15,6 +15,12 @@ const isUndo = (e) =>
   e.ctrlKey && !e.altKey && !e.shiftKey && /^[zZ]$/.test(e.key);
 const isRedo = (e) =>
   e.ctrlKey && !e.altKey && e.shiftKey && /^[zZ]$/.test(e.key);
+const isCopy = (e) =>
+  e.ctrlKey && !e.altKey && !e.shiftKey && /^[cC]$/.test(e.key);
+const isPaste = (e) =>
+  e.ctrlKey && !e.altKey && !e.shiftKey && /^[vV]$/.test(e.key);
+const isCut = (e) =>
+  e.ctrlKey && !e.altKey && !e.shiftKey && /^[xX]$/.test(e.key);
 
 export function keypressHandler(e, dispatch) {
   if (isDigit(e.key)) handleDigit(e, dispatch);
@@ -22,6 +28,9 @@ export function keypressHandler(e, dispatch) {
   else if (isValidTrackString(e.key)) handleTrackString(e, dispatch);
   else if (isUndo(e)) dispatch(ActionCreators.undo());
   else if (isRedo(e)) dispatch(ActionCreators.redo());
+  else if (isCopy(e)) copySelection(e, dispatch);
+  else if (isPaste(e)) pasteData(e, dispatch);
+  else if (isCut(e)) cutSelection(e, dispatch);
 }
 
 function handleDigit(e: Event, dispatch) {
@@ -128,19 +137,17 @@ export function shiftBar(forward = true) {
   }
 }
 
-export function updateFocus(e, dispatch) {
+export function updateFocus(e, dispatch, ignoreShift = false) {
   const active_el = document.activeElement;
 
-  let row = parseInt(active_el?.attributes?.row?.value);
-  let col = parseInt(active_el?.attributes?.col?.value);
-  let track = parseInt(active_el?.attributes?.track?.value);
+  let [track, col, row] = getActiveIndex();
 
   dispatch(setFocusedColumn(col));
   dispatch(setFocusedRow(row));
   dispatch(setFocusedTrack(track));
 
   dispatch(setSelectionEnd(col));
-  if (!e.shiftKey) dispatch(setSelectionStart(col));
+  if (!ignoreShift && !e.shiftKey) dispatch(setSelectionStart(col));
 }
 
 export function getActiveIndex() {
@@ -149,4 +156,47 @@ export function getActiveIndex() {
   let col = parseInt(active_el.attributes.col.value);
   let track = parseInt(active_el.attributes.track?.value);
   return [track, col, row];
+}
+
+export function copySelection(e, dispatch) {
+  const [track, col, row] = getActiveIndex();
+  const notes = store.getState().noteMap.present[track];
+  const [start, end] = getSelectionStartEnd();
+  console.log("writing to clip");
+
+  if (start === end) return;
+
+  const obj = Array(end - start)
+    .fill(0)
+    .map((_, i) => {
+      let rows = Array(6).fill("");
+      rows = rows.map((_, j) => notes[[start + i, j]]);
+      return rows;
+    });
+  console.log(obj, notes);
+
+  window.clipboard = obj;
+}
+
+export function cutSelection(e, dispatch) {
+  const [start, end] = getSelectionStartEnd();
+  copySelection(e, dispatch);
+  dispatch(clearRange({ start, end }));
+}
+
+export function pasteData(e, dispatch) {
+  const [track, col, row] = getActiveIndex();
+  console.log("writing slice", window.clipboard);
+  dispatch(writeSlice({ slice: window.clipboard, track: track, start: col }));
+}
+
+export function getSelectionStartEnd() {
+  let { start, end } = store.getState().selection;
+
+  if (end < start) {
+    let tmp = end;
+    end = start;
+    start = tmp;
+  }
+  return [start, end];
 }

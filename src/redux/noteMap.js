@@ -49,6 +49,19 @@ export const noteMap = createSlice({
         track[index] = note.trim();
       }
     },
+
+    writeSlice: (state, action) => {
+      console.log("pasting data...");
+      const { slice, start, track } = action.payload;
+
+      slice.forEach((rows, i) => {
+        rows.forEach((value, j) => {
+          state[track][[start + i, j]] = value;
+        });
+      });
+      return state;
+    },
+
     clearNote: (state, { id, note }) => {
       state[id] = undefined;
     },
@@ -64,7 +77,6 @@ export const noteMap = createSlice({
       console.log("inside", start, end);
       for (let col = start; col < end; col++) {
         for (let row = 0; row < 6; row++) {
-          console.log(col, row);
           state[track][[col, row]] = "";
         }
       }
@@ -73,6 +85,6 @@ export const noteMap = createSlice({
   },
 });
 
-export const { writeNote, clearNote, clearRange } = noteMap.actions;
+export const { writeNote, writeSlice, clearNote, clearRange } = noteMap.actions;
 
 export default noteMap.reducer;
