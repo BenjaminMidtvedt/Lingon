@@ -14,6 +14,11 @@ import {
 } from "./redux/config";
 
 import { PlayArrow, Stop } from "@mui/icons-material";
+import {
+  clearSelection,
+  setSelectionEnd,
+  setSelectionStart,
+} from "./redux/selection";
 
 function shiftBar(forward = true) {
   //add all elements we want to include in our selection
@@ -74,8 +79,62 @@ function App() {
   const numberOfBars = useSelector((state) => state.config.numberOfBars);
 
   useEffect(() => {
+    let selectionStart = 0;
+    let selectionEnd = 0;
+    let selectionTrack = 0;
+    let ismousedown = false;
+    let gridPositions = [];
     window.addEventListener("click", (e) => {
       updateFocus(dispatch);
+    });
+
+    window.addEventListener("mousedown", (e) => {
+      const onTrack =
+        e.target.classList.contains("slot-text") ||
+        e.target.classList.contains("slot");
+      ismousedown = onTrack;
+      if (onTrack) {
+        let idx = 0;
+        let slots = Array.from(document.getElementsByClassName("slot"));
+        gridPositions = slots
+          .filter(
+            (v) =>
+              (v.attributes.track.value === "0") &
+              (v.attributes.row.value === "0")
+          )
+          .sort(
+            (a, b) =>
+              parseInt(a.attributes.col.value) -
+              parseInt(b.attributes.col.value)
+          )
+          .map((v) => v.offsetLeft);
+
+        selectionStart = gridPositions.findIndex((v) => v >= e.x) - 1;
+        selectionEnd = selectionStart;
+
+        dispatch(setSelectionStart(selectionStart));
+        dispatch(setSelectionEnd(selectionEnd));
+
+        console.log(selectionStart);
+      }
+    });
+
+    window.addEventListener("mouseup", (e) => {
+      ismousedown = false;
+    });
+
+    window.addEventListener("mousemove", (e) => {
+      if (ismousedown) {
+        selectionEnd = gridPositions.findIndex((v) => v >= e.x) - 1;
+        dispatch(setSelectionEnd(selectionEnd));
+
+        let focusedCol = document.activeElement.attributes.col?.value;
+        if (focusedCol !== undefined) {
+          let dif = parseInt(selectionEnd) - focusedCol;
+          shiftFocusBy(6 * dif);
+          updateFocus(dispatch);
+        }
+      }
     });
 
     window.addEventListener("keydown", (e) => {
@@ -149,6 +208,15 @@ function App() {
         updateFocus(dispatch);
 
         if (stopProp) {
+          if (!e.shiftKey) {
+            dispatch(clearSelection());
+          } else {
+            const newCol = document.activeElement.attributes?.col?.value;
+            if (newCol !== undefined) {
+              dispatch(setSelectionEnd(parseInt(newCol)));
+            }
+          }
+
           e.stopPropagation();
           e.stopImmediatePropagation();
           e.preventDefault();
@@ -174,7 +242,7 @@ function App() {
       >
         <Beat />
         <Track track={0}></Track>
-
+        <Selection></Selection>
         {/* <Track track={1}></Track> */}
       </div>
       <Overlay onPlay={Play} />
@@ -233,6 +301,31 @@ function Beat() {
 
 function Lingon() {
   return <span className="lingon">Lingon</span>;
+}
+
+function Selection() {
+  let { start, end } = useSelector((state) => state.selection);
+  if (start === end) return <div></div>;
+
+  if (end < start) {
+    let tmp = end;
+    end = start;
+    start = tmp;
+  }
+  return (
+    <div
+      style={{
+        gridRow: 2,
+        gridColumn: `${start + 1} / ${end + 1}`,
+        marginTop: -7,
+        marginBottom: -7,
+        backgroundColor: "#bb97e710",
+        borderTop: "2px solid #bb97e7",
+        borderBottom: "2px solid #bb97e7",
+        // backgroundColor: "red",
+      }}
+    ></div>
+  );
 }
 
 export default App;

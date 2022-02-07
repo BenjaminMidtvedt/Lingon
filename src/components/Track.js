@@ -11,6 +11,7 @@ function Slot({ track = 0, row = 0, col = 0, bar = 0 }) {
   const value = useSelector(
     (state) => state.noteMap.present[track][[col, row]]
   );
+
   return (
     <div
       track={track}

@@ -81,10 +81,12 @@ body {
 }
 
 .slot {
+  position: relative;
   height: 21px;
   line-height: 19px;
   min-width: 14px;
   padding: 1px;
+  user-select: none;
 
   /* outline: 4px 4px 4px 4px solid black; */
   /* box-shadow: inset -2px -2px 0 5px red, inset 0 0 0 10px black; */
