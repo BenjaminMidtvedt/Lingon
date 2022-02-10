@@ -2,8 +2,10 @@
 // import "./App.css";
 
 import { useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { connect } from "react-redux";
+import { listInstruments } from "../audio/context";
+import { setInstrument } from "../redux/noteMap";
 
 const scale = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
 
@@ -36,7 +38,10 @@ function Bar({ track, bar }) {
   cols = cols.map((_, i) => (
     <div
       className={`track-col ${i === 0 ? "bar-start" : ""}`}
-      style={{ gridRow: track + 2, gridColumn: bar * 16 + i + 1 }}
+      style={{
+        gridRow: track * 2 + 3,
+        gridColumn: bar * 16 + i + 1,
+      }}
       key={`${track}-${bar * notesPerBar + i}`}
     >
       <Slot track={track} bar={bar} row={0} col={bar * notesPerBar + i}></Slot>
@@ -52,12 +57,71 @@ function Bar({ track, bar }) {
 
 function Track({ track = 0, tuning = [50, 55, 60, 65, 69, 74] }) {
   const numberOfBars = useSelector((state) => state.config.numberOfBars);
-
-  let scale_chars = tuning.map((i) => scale[i % scale.length]);
   let bars = Array(numberOfBars).fill(0);
   bars = bars.map((_, i) => <Bar track={track} key={i} bar={i}></Bar>);
 
-  return <>{bars}</>;
+  return (
+    <>
+      <Tuning track={track} />
+      <InstrumentSelect track={track} />
+      {bars}
+    </>
+  );
+}
+
+function InstrumentSelect({ track }) {
+  const instruments = listInstruments();
+  const currentInstrument = useSelector(
+    (state) => state.noteMap.present[track].instrument
+  );
+  const dispatch = useDispatch();
+  return (
+    <div
+      style={{
+        gridRow: track * 2 + 2,
+        gridColumn: "1 / 12",
+        height: 30,
+      }}
+    >
+      <select
+        className="instrument-select"
+        value={currentInstrument}
+        onChange={(e) => dispatch(setInstrument({ id: e.target.value, track }))}
+      >
+        {instruments.map((name, i) => (
+          <option value={i} key={name}>
+            {i}: {name}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}
+
+function Tuning({ track }) {
+  const tuning = useSelector((state) => state.noteMap.present[track].tuning);
+
+  let scale_chars = tuning.map((i) => scale[(i + 2) % scale.length]);
+
+  return (
+    <div
+      style={{
+        gridRow: track * 2 + 3,
+        gridColumn: "1",
+        height: 135,
+        display: "flex",
+        color: "white",
+        flexDirection: "column",
+        alignContent: "stretch",
+        justifyContent: "space-between",
+        marginLeft: -50,
+      }}
+    >
+      {scale_chars.map((v, i) => (
+        <div key={i}>{v}</div>
+      ))}
+    </div>
+  );
 }
 
 export default Track;

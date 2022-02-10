@@ -7,6 +7,9 @@ import {
   setSelectionStart,
 } from "./selection";
 import store from "./store";
+import { playTrackColumn } from "../audio/context";
+
+let currentlyPlaying = [];
 
 const isDigit = RegExp.prototype.test.bind(/^[0-9]$/);
 const isArrow = RegExp.prototype.test.bind(/^Arrow/);
@@ -44,6 +47,11 @@ function handleDigit(e: Event, dispatch) {
       })
     );
   }
+  const trackObj = store.getState().noteMap.present[track];
+  currentlyPlaying.forEach((v) => v?.stop());
+  playTrackColumn(trackObj, col).then((notes) => {
+    currentlyPlaying = notes;
+  });
   e.preventDefault();
   e.stopImmediatePropagation();
   e.stopPropagation();

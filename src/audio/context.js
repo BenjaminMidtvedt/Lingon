@@ -1,56 +1,61 @@
 import store from "../redux/store";
-
+import WebAudioFontPlayer from "webaudiofont";
 // Get context
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 const audioContext = new AudioContext();
 
-export function createNote(key) {
-  const oscillator = audioContext.createOscillator();
-  // console.log(key);
+const player = new WebAudioFontPlayer();
+player.loader.decodeAfterLoading(audioContext, "_tone_0300_Chaos_sf2_file");
 
-  const freq = 440 * Math.pow(2, (key - 79) / 12);
-  oscillator.frequency.setValueAtTime(freq, audioContext.currentTime); // value in hertz
-
-  return oscillator;
+export function listInstruments() {
+  return player.loader.instrumentTitles();
 }
 
-export function playNote(key, duration = 0.5) {
-  const oscillator = createNote(key, duration);
-  oscillator.start(audioContext.currentTime);
-  oscillator.stop(audioContext.currentTime + duration);
+export async function loadInstrument(instrumentId, onDone) {
+  const instrumentInfo = player.loader.instrumentInfo(instrumentId);
+  player.loader.startLoad(
+    audioContext,
+    instrumentInfo.url,
+    instrumentInfo.variable
+  );
 
-  return oscillator;
+  player.loader.waitLoad(() => onDone(window[instrumentInfo.variable]));
 }
 
 export function playTrackColumn(track, column) {
   let numberOfNotes = 0;
 
   const tuning = track.tuning;
+  const instrumentId = track.instrument || 0;
+  const out = player.loader.findInstrument(instrumentId);
+  console.log(track);
 
-  const notes = Array(6)
-    .fill(0)
-    .map((_, i) => {
-      let value = track[[column, i]];
-      if (Number.isInteger(value)) {
-        numberOfNotes += 1;
-        return createNote(value + tuning[i]);
-      } else {
-        return undefined;
-      }
+  return new Promise((resolve, reject) => {
+    loadInstrument(out, (instrument) => {
+      const synch_latency = 1 / 20;
+      const currentTime = audioContext.currentTime;
+      const notes = Array(6)
+        .fill(0)
+        .map((_, i) => {
+          let value = track[[column, i]];
+          if (Number.isInteger(value)) {
+            const pitch = tuning[i] + value - 10;
+            const envelope = player.queueWaveTable(
+              audioContext,
+              audioContext.destination,
+              instrument,
+              currentTime + synch_latency,
+              pitch,
+              0.5,
+              1 / 6
+            );
+            return envelope.audioBufferSourceNode;
+          }
+          return undefined;
+        });
+      resolve(notes);
     });
-
-  const gainNode = audioContext.createGain();
-  gainNode.gain.value = 1 / 6;
-
-  notes.forEach((note) => (note ? note.connect(gainNode) : null));
-  gainNode.connect(audioContext.destination);
-  console.log(notes);
-  notes.forEach((note) => {
-    note?.start(audioContext.currentTime);
-    note?.stop(audioContext.currentTime + 0.5);
   });
-
-  return notes;
 }
 
 export function Play(start = 0) {
@@ -63,36 +68,47 @@ export function Play(start = 0) {
 
   noteMap.present.forEach((track) => {
     const { tuning } = track;
+    const instrumentId = track.instrument || 0;
+    const out = player.loader.findInstrument(instrumentId);
 
-    const gainNode = audioContext.createGain();
-    gainNode.connect(audioContext.destination);
-    gainNode.gain.value = 1 / 8;
+    loadInstrument(out, (instrument) => {
+      Object.entries(track)
+        .filter(([key, _]) => key.includes(","))
+        .map(([key, val]) => [...key.split(","), val])
+        .filter(
+          ([col, row, val]) => col >= start && val !== "" && val !== undefined
+        )
+        .sort(([col, row, val], [col2, row2, val2]) => col - col2)
+        .forEach(([col, row, val]) => {
+          const time = startTime + ((col - start) / 120 / 4) * 60;
+          playingNotes[row]?.stop?.(time);
 
-    Object.entries(track)
-      .filter(([key, _]) => key.includes(","))
-      .map(([key, val]) => [...key.split(","), val])
-      .filter(
-        ([col, row, val]) => col >= start && val !== "" && val !== undefined
-      )
-      .sort(([col, row, val], [col2, row2, val2]) => col - col2)
-      .forEach(([col, row, val]) => {
-        const time = startTime + ((col - start) / 120 / 4) * 60;
-        playingNotes[row]?.stop?.(time);
+          if (val === "*") {
+            playingNotes[row] = undefined;
+            return;
+          }
 
-        if (val === "*") {
-          playingNotes[row] = undefined;
-          return;
-        }
+          const pitch = tuning[row] + val - 10;
+          if (pitch === undefined || isNaN(pitch)) return;
+          const envelope = player.queueWaveTable(
+            audioContext,
+            audioContext.destination,
+            instrument,
+            time,
+            pitch,
+            100,
+            1 / 12
+          );
+          playingNotes[row] = envelope.audioBufferSourceNode;
 
-        let key = val + tuning[row];
-        if (key === undefined || isNaN(key)) return;
-        const note = createNote(key);
-        note.connect(gainNode);
-        playingNotes[row] = note;
-        note.start(time);
+          endTime = Math.max(time, endTime);
+        });
+    });
 
-        endTime = Math.max(time, endTime);
-      });
     playingNotes.forEach((v) => v?.stop?.(endTime + 1));
   });
+}
+
+export function Stop() {
+  player.cancelQueue(audioContext);
 }

@@ -9,12 +9,13 @@ const characters = [" ", "*"];
 let playingNotes = [];
 
 const initialState = loadState();
-
+console.log(initialState.noteMap);
 export const noteMap = createSlice({
   name: "noteMap",
   initialState: initialState?.noteMap || [
     {
       tuning: [50, 55, 60, 65, 69, 74].reverse(),
+      instrument: 0,
     },
   ],
   reducers: {
@@ -43,15 +44,13 @@ export const noteMap = createSlice({
         }
 
         playingNotes.forEach((n) => n?.stop());
-
-        playingNotes = playTrackColumn(track, column);
       } else if (characters.includes(note)) {
         track[index] = note.trim();
       }
     },
 
     writeSlice: (state, action) => {
-      console.log("pasting data...");
+      console.log("pasting data...o");
       const { slice, start, track } = action.payload;
 
       slice.forEach((rows, i) => {
@@ -82,9 +81,15 @@ export const noteMap = createSlice({
       }
       return state;
     },
+
+    setInstrument: (state, { payload }) => {
+      console.log(payload);
+      state[payload.track].instrument = payload.id;
+    },
   },
 });
 
-export const { writeNote, writeSlice, clearNote, clearRange } = noteMap.actions;
+export const { writeNote, writeSlice, clearNote, clearRange, setInstrument } =
+  noteMap.actions;
 
 export default noteMap.reducer;

@@ -1,6 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Alegreya+Sans+SC:wght@100;300;400&family=Julius+Sans+One&family=Roboto&display=swap");
 html,
 body {
+  font-family: "Roboto", sans-serif;
   height: 100%;
   background-color: #121212;
 }
@@ -238,4 +239,20 @@ body {
 
 .stop-button > svg {
   fill: #ed4643 !important;
+}
+
+.instrument-select {
+  background-color: transparent;
+  color: white;
+  outline: none;
+  border: none;
+  border-bottom: 2px solid #bb97e7;
+  padding: 4px;
+  font-size: 14px;
+  width: 100%;
+}
+
+.instrument-select > option {
+  background-color: #121212;
+  color: white;
 }

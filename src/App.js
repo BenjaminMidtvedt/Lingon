@@ -6,7 +6,12 @@ import store from "./redux/store";
 import { useDispatch, useSelector } from "react-redux";
 import { writeNote, clearNote } from "./redux/noteMap";
 import { ActionCreators } from "redux-undo";
-import { Play, playNote, playTrackColumn } from "./audio/context";
+import {
+  Play,
+  playNote,
+  playTrackColumn,
+  Stop as StopPlay,
+} from "./audio/context";
 import {
   setFocusedColumn,
   setFocusedRow,
@@ -122,10 +127,10 @@ function App() {
         className="home-body"
         style={{
           display: "grid",
-          gridTemplateColumns: `repeat(${
-            numberOfBars * notesPerBar
-          }, fit-content(25px)`,
-          gridTemplateRows: `50px auto`,
+          // gridTemplateColumns: `repeat(${
+          //   numberOfBars * notesPerBar
+          // }, fit-content(25px)`,
+          gridTemplateRows: "40px repeat(5, 40px auto)",
         }}
       >
         <Beat />
@@ -137,6 +142,7 @@ function App() {
         onPlay={() => {
           Play(store.getState().selection.end);
         }}
+        onStop={StopPlay}
       />
     </div>
   );
@@ -222,7 +228,7 @@ function Selection() {
   return (
     <div
       style={{
-        gridRow: 2,
+        gridRow: 3,
         gridColumn: `${start + 1} / ${end + 1}`,
         marginTop: -7,
         marginBottom: -7,
