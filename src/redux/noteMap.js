@@ -9,7 +9,6 @@ const characters = [" ", "*"];
 let playingNotes = [];
 
 const initialState = loadState();
-console.log(initialState.noteMap);
 export const noteMap = createSlice({
   name: "noteMap",
   initialState: initialState?.noteMap || [
