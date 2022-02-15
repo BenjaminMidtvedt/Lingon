@@ -61,7 +61,6 @@ function handleTrackString(e, dispatch) {
   if (e.key === " ") {
     const { start, end } = store.getState().selection;
     if (start !== end) {
-      console.log("clearing range", start, end);
       return dispatch(clearRange({ start, end }));
     }
   }
@@ -170,7 +169,6 @@ export function copySelection(e, dispatch) {
   const [track, col, row] = getActiveIndex();
   const notes = store.getState().noteMap.present[track];
   const [start, end] = getSelectionStartEnd();
-  console.log("writing to clip");
 
   if (start === end) return;
 
@@ -181,7 +179,6 @@ export function copySelection(e, dispatch) {
       rows = rows.map((_, j) => notes[[start + i, j]]);
       return rows;
     });
-  console.log(obj, notes);
 
   window.clipboard = obj;
 }
@@ -194,7 +191,6 @@ export function cutSelection(e, dispatch) {
 
 export function pasteData(e, dispatch) {
   const [track, col, row] = getActiveIndex();
-  console.log("writing slice", window.clipboard);
   dispatch(writeSlice({ slice: window.clipboard, track: track, start: col }));
 }
 

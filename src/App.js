@@ -70,6 +70,7 @@ function App() {
       ismousedown = onTrack;
       if (onTrack) {
         let slots = Array.from(document.getElementsByClassName("slot"));
+        const scroll = document.getElementById("App").scrollLeft;
         gridPositions = slots
           .filter(
             (v) =>
@@ -83,13 +84,11 @@ function App() {
           )
           .map((v) => v.offsetLeft);
 
-        selectionStart = gridPositions.findIndex((v) => v >= e.x) - 1;
+        selectionStart = gridPositions.findIndex((v) => v >= e.x + scroll) - 1;
         selectionEnd = selectionStart;
 
         dispatch(setSelectionStart(selectionStart));
         dispatch(setSelectionEnd(selectionEnd));
-
-        console.log(selectionStart);
       } else {
         dispatch(clearSelection());
       }
@@ -101,7 +100,8 @@ function App() {
 
     window.addEventListener("mousemove", (e) => {
       if (ismousedown) {
-        selectionEnd = gridPositions.findIndex((v) => v >= e.x) - 1;
+        const scroll = document.getElementById("App").scrollLeft;
+        selectionEnd = gridPositions.findIndex((v) => v >= e.x + scroll) - 1;
         dispatch(setSelectionEnd(selectionEnd));
 
         let focusedCol = document.activeElement.attributes.col?.value;
@@ -121,7 +121,7 @@ function App() {
   const numberOfTracks = useSelector((state) => state.noteMap.present.length);
 
   return (
-    <div className="App">
+    <div className="App" id="App">
       <Lingon />
       <div
         className="home-body"

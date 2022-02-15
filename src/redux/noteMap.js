@@ -49,7 +49,6 @@ export const noteMap = createSlice({
     },
 
     writeSlice: (state, action) => {
-      console.log("pasting data...o");
       const { slice, start, track } = action.payload;
 
       slice.forEach((rows, i) => {
@@ -72,7 +71,6 @@ export const noteMap = createSlice({
         start = tmp;
       }
       const [track, _col, _row] = getActiveIndex();
-      console.log("inside", start, end);
       for (let col = start; col < end; col++) {
         for (let row = 0; row < 6; row++) {
           state[track][[col, row]] = "";
@@ -82,7 +80,6 @@ export const noteMap = createSlice({
     },
 
     setInstrument: (state, { payload }) => {
-      console.log(payload);
       state[payload.track].instrument = payload.id;
     },
   },
