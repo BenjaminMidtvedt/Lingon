@@ -32,7 +32,7 @@ This is mostly a preliminary roadmap. Expect it to change drastically over time:
 - Changing rythm and tempo
 - More convenience shortcuts
   - insert / delete to shift track forwards and backwards
-  - + / - to increase or decrease all notes in selection
+  - \+ / - to increase or decrease all notes in selection
   - page up / page down to shift notes up or down strings (keeping the same note if possible)
 - Sharing functionality
 - Cloud backups (tentative) 
