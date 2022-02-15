@@ -1,16 +1,16 @@
 {
   "files": {
     "main.css": "/Lingon/static/css/main.0050d8b0.css",
-    "main.js": "/Lingon/static/js/main.5067f6e7.js",
+    "main.js": "/Lingon/static/js/main.f3264612.js",
     "static/js/787.b3529c6f.chunk.js": "/Lingon/static/js/787.b3529c6f.chunk.js",
     "static/media/logo.svg": "/Lingon/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
     "index.html": "/Lingon/index.html",
     "main.0050d8b0.css.map": "/Lingon/static/css/main.0050d8b0.css.map",
-    "main.5067f6e7.js.map": "/Lingon/static/js/main.5067f6e7.js.map",
+    "main.f3264612.js.map": "/Lingon/static/js/main.f3264612.js.map",
     "787.b3529c6f.chunk.js.map": "/Lingon/static/js/787.b3529c6f.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.0050d8b0.css",
-    "static/js/main.5067f6e7.js"
+    "static/js/main.f3264612.js"
   ]
 }
