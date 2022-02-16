@@ -209,8 +209,23 @@ function Beat() {
     });
 
   useEffect(() => {
-    focusedRef.current.scrollIntoViewIfNeeded();
+    const { isPlaying } = store.getState().state;
+    if (
+      focusedRef.current.getBoundingClientRect().right >
+      window.innerWidth - 100
+    ) {
+      focusedRef.current.scrollIntoView({
+        inline: isPlaying ? "center" : "center",
+      });
+    }
+
+    if (focusedRef.current.getBoundingClientRect().left < 100) {
+      focusedRef.current.scrollIntoView({
+        inline: isPlaying ? "center" : "center",
+      });
+    }
   });
+
   return <>{beats}</>;
 }
 

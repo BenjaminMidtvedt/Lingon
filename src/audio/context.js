@@ -110,10 +110,10 @@ export function Play(start = 0) {
 
           endTime = Math.max(time, endTime);
         });
+      moveFocusDuringPlay(startTime, start, endTime + 1);
     });
 
     playingNotes.forEach((v) => v?.stop?.(endTime + 1));
-    moveFocusDuringPlay(startTime, start, endTime + 1);
   });
 }
 
@@ -137,7 +137,6 @@ function moveFocusDuringPlay(startTime, start, end) {
       return;
     }
 
-    console.log(nextRow);
     store.dispatch(setFocusedColumn(nextRow));
     nextStep += stepTime;
     nextRow += 1;
