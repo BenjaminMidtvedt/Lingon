@@ -1,4 +1,4 @@
-import { setFocusedColumn, setFocusedRow, setFocusedTrack } from "./config";
+import { setFocusedColumn, setFocusedRow, setFocusedTrack } from "./state";
 import { clearRange, writeNote, writeSlice } from "./noteMap";
 import { ActionCreators, GroupByFunction } from "redux-undo";
 import {

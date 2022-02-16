@@ -1,7 +1,7 @@
 import logo from "./logo.svg";
 import "./App.css";
 import Track from "./components/Track";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import store from "./redux/store";
 import { useDispatch, useSelector } from "react-redux";
 import { writeNote, clearNote } from "./redux/noteMap";
@@ -127,16 +127,12 @@ function App() {
         className="home-body"
         style={{
           display: "grid",
-          // gridTemplateColumns: `repeat(${
-          //   numberOfBars * notesPerBar
-          // }, fit-content(25px)`,
           gridTemplateRows: "40px repeat(5, 40px auto)",
         }}
       >
         <Beat />
         <Track track={0}></Track>
         <Selection></Selection>
-        {/* <Track track={1}></Track> */}
       </div>
       <Overlay
         onPlay={() => {
@@ -180,7 +176,9 @@ function Overlay({ onPlay = undefined, onStop = undefined }) {
 function Beat() {
   const numberOfBars = useSelector((state) => state.config.numberOfBars);
   const notesPerBar = useSelector((state) => state.config.notesPerBar);
-  const col = useSelector((state) => state.config.focusedColumn);
+  const col = useSelector((state) => state.state.focusedColumn);
+
+  const focusedRef = useRef(null);
 
   const beats = Array(numberOfBars * notesPerBar)
     .fill(0)
@@ -196,6 +194,7 @@ function Beat() {
       return (
         <div
           key={i}
+          ref={col === i ? focusedRef : undefined}
           style={{
             margin: "auto",
             marginTop: 0,
@@ -208,6 +207,10 @@ function Beat() {
         ></div>
       );
     });
+
+  useEffect(() => {
+    focusedRef.current.scrollIntoViewIfNeeded();
+  });
   return <>{beats}</>;
 }
 

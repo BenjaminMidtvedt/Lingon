@@ -1,5 +1,10 @@
 import store from "../redux/store";
 import WebAudioFontPlayer from "webaudiofont";
+import {
+  setFocusedColumn,
+  setPlayingFalse,
+  setPlayingTrue,
+} from "../redux/state";
 // Get context
 const AudioContext = window.AudioContext || window.webkitAudioContext;
 const audioContext = new AudioContext();
@@ -59,11 +64,13 @@ export function playTrackColumn(track, column) {
 }
 
 export function Play(start = 0) {
+  store.dispatch(setPlayingTrue());
+
   const allNotes = [];
   const playingNotes = Array(7);
   const { noteMap } = store.getState();
 
-  const startTime = audioContext.currentTime;
+  const startTime = audioContext.currentTime + 0.01;
   let endTime = startTime;
 
   noteMap.present.forEach((track) => {
@@ -106,9 +113,36 @@ export function Play(start = 0) {
     });
 
     playingNotes.forEach((v) => v?.stop?.(endTime + 1));
+    moveFocusDuringPlay(startTime, start, endTime + 1);
   });
 }
 
 export function Stop() {
+  store.dispatch(setPlayingFalse());
   player.cancelQueue(audioContext);
+}
+
+function moveFocusDuringPlay(startTime, start, end) {
+  let stepTime = 60 / 120 / 4;
+  let nextStep = startTime;
+  let nextRow = start;
+
+  function step() {
+    if (!store.getState().state.isPlaying) return;
+
+    if (audioContext.currentTime < nextStep)
+      return window.requestAnimationFrame(step);
+    if (audioContext.currentTime > end) {
+      store.dispatch(setPlayingFalse());
+      return;
+    }
+
+    console.log(nextRow);
+    store.dispatch(setFocusedColumn(nextRow));
+    nextStep += stepTime;
+    nextRow += 1;
+    return window.requestAnimationFrame(step);
+  }
+
+  window.requestAnimationFrame(step);
 }

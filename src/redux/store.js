@@ -7,6 +7,7 @@ import noteMap from "./noteMap";
 import { saveState } from "./utils";
 import { throttle } from "lodash";
 import selection from "./selection";
+import state from "./state";
 
 const store = configureStore(
   {
@@ -14,6 +15,7 @@ const store = configureStore(
       noteMap: undoable(noteMapReducer),
       config: config,
       selection: selection,
+      state: state,
     },
   },
   [logger]
