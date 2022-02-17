@@ -33,12 +33,14 @@ function Slot({ track = 0, row = 0, col = 0, bar = 0 }) {
 
 connect()(Slot);
 
-function Bar({ track, bar }) {
+function Bar({ track, bar, isLast }) {
   const notesPerBar = useSelector((state) => state.config.notesPerBar);
   let cols = Array(notesPerBar).fill(0);
   cols = cols.map((_, i) => (
     <div
-      className={`track-col ${i === 0 ? "bar-start" : ""}`}
+      className={`track-col ${i === 0 ? "bar-start" : ""} ${
+        i === notesPerBar - 1 && isLast ? "bar-end" : ""
+      }`}
       style={{
         gridRow: track * 2 + 3,
         gridColumn: bar * 16 + i + 1,
@@ -59,7 +61,9 @@ function Bar({ track, bar }) {
 function Track({ track = 0, tuning = [50, 55, 60, 65, 69, 74] }) {
   const numberOfBars = useSelector((state) => state.config.numberOfBars);
   let bars = Array(numberOfBars).fill(0);
-  bars = bars.map((_, i) => <Bar track={track} key={i} bar={i}></Bar>);
+  bars = bars.map((_, i) => (
+    <Bar track={track} key={i} bar={i} isLast={i === numberOfBars - 1}></Bar>
+  ));
 
   return (
     <>

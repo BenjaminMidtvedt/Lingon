@@ -56,6 +56,8 @@ body {
 .home-body {
   margin-left: 100px;
   margin-top: 160px;
+  padding-right: 100px;
+  width: fit-content;
 }
 
 .track {
@@ -80,6 +82,10 @@ body {
 
 .bar-start {
   border-left: 2.4px solid #ba97e7;
+}
+
+.bar-end {
+  border-right: 2.4px solid #ba97e7;
 }
 
 .slot {
