@@ -95,10 +95,10 @@ body {
   background: linear-gradient(
     to bottom,
     transparent 0%,
-    transparent calc(50% - 1.05px),
-    CurrentColor calc(50% - 1.05px),
-    CurrentColor calc(50% + 1.05px),
-    transparent calc(50% + 1.05px),
+    transparent calc(50% - 1.11px),
+    CurrentColor calc(50% - 1.11px),
+    CurrentColor calc(50% + 1.11px),
+    transparent calc(50% + 1.11px),
     transparent 100%
   );
 }
@@ -121,25 +121,25 @@ body {
   background: linear-gradient(
         to bottom,
         transparent 0%,
-        transparent calc(50% - 1.05px),
-        CurrentColor calc(50% - 1.05px),
-        CurrentColor calc(50% + 1.05px),
-        transparent calc(50% + 1.05px),
+        transparent calc(50% - 1.11px),
+        CurrentColor calc(50% - 1.11px),
+        CurrentColor calc(50% + 1.11px),
+        transparent calc(50% + 1.11px),
         transparent 100%
       )
       no-repeat,
     linear-gradient(
         to bottom,
         transparent 0%,
-        transparent calc(50% - 1.05px),
-        CurrentColor calc(50% - 1.05px),
-        CurrentColor calc(50% + 1.05px),
-        transparent calc(50% + 1.05px),
+        transparent calc(50% - 1.11px),
+        CurrentColor calc(50% - 1.11px),
+        CurrentColor calc(50% + 1.11px),
+        transparent calc(50% + 1.11px),
         transparent 100%
       )
       no-repeat;
 
-  background-position: 0 0, 100% 0;
+  background-position: 0 0, calc(100%) 0;
   background-size: 1px 100%, 1px 100%;
 }
 
