@@ -9,10 +9,7 @@ export const config = createSlice({
   name: "config",
   initialState: storedState?.config || {
     notesPerBar: 16,
-    numberOfBars: 16,
-    focusedColumn: 0,
-    focusedRow: 0,
-    focusedTrack: 0,
+    numberOfBars: 128,
   },
   reducers: {
     setFocusedColumn: (state, action) => {
