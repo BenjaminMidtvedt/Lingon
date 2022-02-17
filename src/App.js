@@ -176,8 +176,8 @@ function Overlay({ onPlay = undefined, onStop = undefined }) {
 function Beat() {
   const numberOfBars = useSelector((state) => state.config.numberOfBars);
   const notesPerBar = useSelector((state) => state.config.notesPerBar);
-  const col = useSelector((state) => state.state.focusedColumn);
-
+  let col = useSelector((state) => state.state.focusedColumn);
+  col = Math.min(col, numberOfBars * notesPerBar - 1);
   const focusedRef = useRef(null);
 
   const beats = Array(numberOfBars * notesPerBar)

@@ -66,14 +66,14 @@ export function playTrackColumn(track, column) {
 export function Play(start = 0) {
   store.dispatch(setPlayingTrue());
 
-  const allNotes = [];
-  const playingNotes = Array(7);
   const { noteMap } = store.getState();
 
   const startTime = audioContext.currentTime + 0.01;
   let endTime = startTime;
 
-  noteMap.present.forEach((track) => {
+  noteMap.present.forEach((track, trackid) => {
+    const playingNotes = Array(7);
+    const playingNotesId = {};
     const { tuning } = track;
     const instrumentId = track.instrument || 0;
     const out = player.loader.findInstrument(instrumentId);
@@ -90,8 +90,13 @@ export function Play(start = 0) {
           const time = startTime + ((col - start) / 120 / 4) * 60;
           playingNotes[row]?.stop?.(time);
 
+          if (playingNotesId[row]) {
+            const [slotId, startTime] = playingNotesId[row];
+            highlightNote(slotId, startTime, time);
+          }
           if (val === "*") {
             playingNotes[row] = undefined;
+            playingNotesId[row] = undefined;
             return;
           }
 
@@ -107,13 +112,19 @@ export function Play(start = 0) {
             1 / 12
           );
           playingNotes[row] = envelope.audioBufferSourceNode;
-
+          playingNotesId[row] = [`${trackid},${col},${row}`, time];
           endTime = Math.max(time, endTime);
         });
       moveFocusDuringPlay(startTime, start, endTime + 1);
     });
 
-    playingNotes.forEach((v) => v?.stop?.(endTime + 1));
+    playingNotes.forEach((v, row) => {
+      v?.stop?.(endTime + 1);
+      if (playingNotesId[row]) {
+        const [slotId, startTime] = playingNotesId[row];
+        highlightNote(slotId, startTime, endTime + 1);
+      }
+    });
   });
 }
 
@@ -129,7 +140,6 @@ function moveFocusDuringPlay(startTime, start, end) {
 
   function step() {
     if (!store.getState().state.isPlaying) return;
-
     if (audioContext.currentTime < nextStep)
       return window.requestAnimationFrame(step);
     if (audioContext.currentTime > end) {
@@ -141,6 +151,28 @@ function moveFocusDuringPlay(startTime, start, end) {
     nextStep += stepTime;
     nextRow += 1;
     return window.requestAnimationFrame(step);
+  }
+
+  window.requestAnimationFrame(step);
+}
+
+function highlightNote(id, start, end) {
+  const el = document.getElementById(id);
+  let didadd = false;
+
+  function step() {
+    if (!store.getState().state.isPlaying || audioContext.currentTime > end)
+      return el.classList.remove("slot-highlight");
+    if (audioContext.currentTime < start)
+      return window.requestAnimationFrame(step);
+
+    if (!didadd) {
+      console.log("added highligh");
+      el.classList.add("slot-highlight");
+      didadd = true;
+    }
+
+    window.requestAnimationFrame(step);
   }
 
   window.requestAnimationFrame(step);

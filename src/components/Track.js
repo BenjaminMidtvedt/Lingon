@@ -20,6 +20,7 @@ function Slot({ track = 0, row = 0, col = 0, bar = 0 }) {
       row={row}
       col={col}
       bar={bar}
+      id={`${track},${col},${row}`}
       tabIndex="0"
       className={`slot slot-row-${row} ${
         value || value === 0 || value === "0" ? "slot-row-nobg" : ""
