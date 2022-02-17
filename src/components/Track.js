@@ -125,4 +125,8 @@ function Tuning({ track }) {
   );
 }
 
+export function numberToNote(number) {
+  return scale[(number + 2) % scale.length];
+}
+
 export default Track;

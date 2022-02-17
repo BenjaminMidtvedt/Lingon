@@ -1,6 +1,6 @@
 import logo from "./logo.svg";
 import "./App.css";
-import Track from "./components/Track";
+import Track, { numberToNote } from "./components/Track";
 import { useEffect, useRef, useState } from "react";
 import store from "./redux/store";
 import { useDispatch, useSelector } from "react-redux";
@@ -140,6 +140,7 @@ function App() {
         }}
         onStop={StopPlay}
       />
+      <Footer></Footer>
     </div>
   );
 }
@@ -186,7 +187,7 @@ function Beat() {
       let in_bar_beat = i % notesPerBar;
       let sub_beat = in_bar_beat % 4;
 
-      let beat_size = 7;
+      let beat_size = 5;
       if (sub_beat === 2) beat_size = 10;
       if (sub_beat === 0) beat_size = 15;
       if (in_bar_beat === 0) beat_size = 20;
@@ -198,7 +199,7 @@ function Beat() {
           style={{
             margin: "auto",
             marginTop: 0,
-            width: 2,
+            width: 1 + (col === i),
             height: beat_size,
             backgroundColor: col === i ? "#b6ec4b" : "white",
             gridColumn: 1 + i,
@@ -256,6 +257,31 @@ function Selection() {
         // backgroundColor: "red",
       }}
     ></div>
+  );
+}
+
+function Footer() {
+  const { focusedColumn, focusedRow, focusedTrack, isPlaying } = useSelector(
+    (store) => store.state
+  );
+
+  const { tuning } = useSelector(
+    (store) => store.noteMap.present[focusedTrack]
+  );
+
+  const value = useSelector(
+    (store) => store.noteMap.present[focusedTrack][[focusedColumn, focusedRow]]
+  );
+
+  const note =
+    Number.isInteger(value) && !isPlaying
+      ? numberToNote(value + tuning[focusedRow])
+      : "";
+
+  return (
+    <div id="footer">
+      <div className="footer-item footer-note">{note}</div>
+    </div>
   );
 }
 

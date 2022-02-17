@@ -261,3 +261,16 @@ body {
 .slot-highlight {
   color: #dac6f2 !important;
 }
+
+#footer {
+  position: fixed;
+  bottom: 32px;
+  left: 0;
+  padding-left: 96px;
+  display: flex;
+}
+
+.footer-note {
+  font-size: 128px;
+  color: #dac6f222;
+}
