@@ -85,20 +85,20 @@ body {
 .slot {
   position: relative;
   height: 21px;
-  line-height: 19px;
+  line-height: 21px;
   min-width: 14px;
   padding: 1px;
   user-select: none;
-
+  color: #bb97e744;
   /* outline: 4px 4px 4px 4px solid black; */
   /* box-shadow: inset -2px -2px 0 5px red, inset 0 0 0 10px black; */
   background: linear-gradient(
     to bottom,
     transparent 0%,
-    transparent calc(50% - 1.11px),
-    #bb97e744 calc(50% - 1.11px),
-    #bb97e744 calc(50% + 1.11px),
-    transparent calc(50% + 1.11px),
+    transparent calc(50% - 1.05px),
+    CurrentColor calc(50% - 1.05px),
+    CurrentColor calc(50% + 1.05px),
+    transparent calc(50% + 1.05px),
     transparent 100%
   );
 }
@@ -107,34 +107,40 @@ body {
 .slot-row-4 {
   /* outline: 4px 4px 4px 4px solid black; */
   /* box-shadow: inset -2px -2px 0 5px red, inset 0 0 0 10px black; */
-  background: linear-gradient(
-    to bottom,
-    transparent 0%,
-    transparent calc(50% - 1.11px),
-    #bb97e760 calc(50% - 1.11px),
-    #bb97e760 calc(50% + 1.11px),
-    transparent calc(50% + 1.11px),
-    transparent 100%
-  );
+  color: #bb97e760;
 }
 
 .slot-row-2,
 .slot-row-3 {
   /* outline: 4px 4px 4px 4px solid black; */
   /* box-shadow: inset -2px -2px 0 5px red, inset 0 0 0 10px black; */
-  background: linear-gradient(
-    to bottom,
-    transparent 0%,
-    transparent calc(50% - 1.11px),
-    #bb97e773 calc(50% - 1.11px),
-    #bb97e773 calc(50% + 1.11px),
-    transparent calc(50% + 1.11px),
-    transparent 100%
-  );
+  color: #bb97e773;
 }
 
 .slot-row-nobg {
-  background: transparent;
+  background: linear-gradient(
+        to bottom,
+        transparent 0%,
+        transparent calc(50% - 1.05px),
+        CurrentColor calc(50% - 1.05px),
+        CurrentColor calc(50% + 1.05px),
+        transparent calc(50% + 1.05px),
+        transparent 100%
+      )
+      no-repeat,
+    linear-gradient(
+        to bottom,
+        transparent 0%,
+        transparent calc(50% - 1.05px),
+        CurrentColor calc(50% - 1.05px),
+        CurrentColor calc(50% + 1.05px),
+        transparent calc(50% + 1.05px),
+        transparent 100%
+      )
+      no-repeat;
+
+  background-position: 0 0, 100% 0;
+  background-size: 1px 100%, 1px 100%;
 }
 
 .lingon {
@@ -154,6 +160,7 @@ body {
   font-size: 16px;
   margin: 2px;
   margin-left: 3px;
+  color: white;
   /* background-color: #121212; */
   /*  */
   user-select: none;
@@ -163,24 +170,24 @@ body {
 @keyframes focus-indicator {
   0% {
     background-color: #bb97e7;
-    color: #c3e797;
+    /* color: #c3e797; */
   }
   47% {
     background-color: #bb97e7;
-    color: #c3e797;
+    /* color: #c3e797; */
   }
   53% {
     background-color: transparent;
-    color: white;
+    /* color: white; */
   }
   94% {
     background-color: transparent;
-    color: white;
+    /* color: white; */
   }
 
   100% {
     background-color: #bb97e7;
-    color: #c3e797;
+    /* color: #c3e797; */
   }
 }
 
