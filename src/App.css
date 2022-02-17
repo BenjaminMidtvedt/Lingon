@@ -265,10 +265,6 @@ body {
   color: white;
 }
 
-.slot-highlight {
-  color: #dac6f2 !important;
-}
-
 #footer {
   position: fixed;
   bottom: 32px;
@@ -280,4 +276,8 @@ body {
 .footer-note {
   font-size: 128px;
   color: #dac6f222;
+}
+
+.slot-highlight {
+  color: #dac6f2 !important;
 }

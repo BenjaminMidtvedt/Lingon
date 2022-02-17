@@ -157,7 +157,7 @@ function moveFocusDuringPlay(startTime, start, end) {
 }
 
 function highlightNote(id, start, end) {
-  const el = document.getElementById(id);
+  const el = document.getElementById(id).children[0];
   let didadd = false;
 
   function step() {
