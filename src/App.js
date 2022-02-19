@@ -269,7 +269,7 @@ function Selection() {
         borderTop: "2px solid #bb97e7",
         borderBottom: "2px solid #bb97e7",
         transitionProperty: "transform",
-        transitionDuration: "0.1s",
+        transitionDuration: "0.05s",
       }}
     ></div>
   );

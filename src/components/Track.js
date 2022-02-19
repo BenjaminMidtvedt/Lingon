@@ -127,7 +127,7 @@ function Marker({ track = 0 }) {
         border: "2px solid white",
         pointerEvents: "none",
         transitionProperty: "transform",
-        transitionDuration: "0.1s",
+        transitionDuration: "0.05s",
       }}
     ></div>
   );

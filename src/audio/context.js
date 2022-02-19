@@ -117,14 +117,6 @@ export function Play(start = 0) {
         });
       moveFocusDuringPlay(startTime, start, endTime + 1);
     });
-
-    playingNotes.forEach((v, row) => {
-      v?.stop?.(endTime + 1);
-      if (playingNotesId[row]) {
-        const [slotId, startTime] = playingNotesId[row];
-        highlightNote(slotId, startTime, endTime + 1);
-      }
-    });
   });
 }
 
@@ -142,10 +134,6 @@ function moveFocusDuringPlay(startTime, start, end) {
     if (!store.getState().state.isPlaying) return;
     if (audioContext.currentTime < nextStep)
       return window.requestAnimationFrame(step);
-    if (audioContext.currentTime > end) {
-      store.dispatch(setPlayingFalse());
-      return;
-    }
 
     store.dispatch(setFocusedColumn(nextRow));
     nextStep += stepTime;
