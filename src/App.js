@@ -54,8 +54,8 @@ function App() {
         const rect = parentSvg.getBoundingClientRect();
         left = rect.left;
         top = rect.top;
-        const x = e.pageX + app.scrollLeft - left;
-        const y = e.pageY + app.scrollTop - top;
+        const x = e.pageX - left;
+        const y = e.pageY - top;
 
         const xPos = Math.floor(x / gridWidth);
         const yPos = Math.floor(y / gridHeight);
@@ -77,8 +77,8 @@ function App() {
     window.addEventListener("mousemove", (e) => {
       if (ismousedown) {
         const app = document.getElementById("App");
-        const x = e.pageX + app.scrollLeft - left;
-        const y = e.pageY + app.scrollTop - top;
+        const x = e.pageX - left;
+        const y = e.pageY - top;
 
         const xPos = Math.max(Math.floor(x / gridWidth), 0);
         const yPos = Math.floor(y / gridHeight);
