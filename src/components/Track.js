@@ -86,7 +86,7 @@ function InstrumentSelect({ track }) {
     <div
       style={{
         gridRow: track * 2 + 2,
-        gridColumn: "1 / 12",
+        width: 250,
         height: 30,
       }}
     >
