@@ -1,10 +1,10 @@
 import logo from "./logo.svg";
 import "./App.css";
-import Track, { numberToNote } from "./components/Track";
+import Track, { gridHeight, gridWidth, numberToNote } from "./components/Track";
 import { useEffect, useRef, useState } from "react";
 import store from "./redux/store";
 import { useDispatch, useSelector } from "react-redux";
-import { writeNote, clearNote } from "./redux/noteMap";
+import { writeNote, clearNote, addTrack } from "./redux/noteMap";
 import { ActionCreators } from "redux-undo";
 import {
   Play,
@@ -16,9 +16,9 @@ import {
   setFocusedColumn,
   setFocusedRow,
   setFocusedTrack,
-} from "./redux/config";
+} from "./redux/state";
 
-import { PlayArrow, Stop } from "@mui/icons-material";
+import { Add, PlayArrow, Stop } from "@mui/icons-material";
 import {
   clearSelection,
   setSelectionEnd,
@@ -28,7 +28,6 @@ import {
   getActiveIndex,
   getSelectionStartEnd,
   keypressHandler,
-  updateFocus,
 } from "./redux/handlers";
 
 function shiftFocusBy(i) {
@@ -52,43 +51,30 @@ function App() {
     let selectionStart = 0;
     let selectionEnd = 0;
     let ismousedown = false;
+    let [top, left] = [0, 0];
     let gridPositions = [];
-    window.addEventListener("click", (e) => {
-      try {
-        updateFocus(e, dispatch, true);
-      } catch (e) {
-        if (!(e instanceof TypeError)) {
-          throw e; // re-throw the error unchanged
-        }
-      }
-    });
 
     window.addEventListener("mousedown", (e) => {
-      const onTrack =
-        e.target.classList.contains("slot-text") ||
-        e.target.classList.contains("slot");
+      const parentSvg = e.composedPath().find((v) => v.localName === "svg");
+
+      const onTrack = parentSvg !== undefined;
       ismousedown = onTrack;
       if (onTrack) {
-        let slots = Array.from(document.getElementsByClassName("slot"));
-        const scroll = document.getElementById("App").scrollLeft;
-        gridPositions = slots
-          .filter(
-            (v) =>
-              (v.attributes.track.value === "0") &
-              (v.attributes.row.value === "0")
-          )
-          .sort(
-            (a, b) =>
-              parseInt(a.attributes.col.value) -
-              parseInt(b.attributes.col.value)
-          )
-          .map((v) => v.offsetLeft);
+        const app = document.getElementById("App");
+        const rect = parentSvg.getBoundingClientRect();
+        left = rect.left;
+        top = rect.top;
+        const x = e.pageX + app.scrollLeft - left;
+        const y = e.pageY + app.scrollTop - top;
 
-        selectionStart = gridPositions.findIndex((v) => v >= e.x + scroll) - 1;
-        selectionEnd = selectionStart;
+        const xPos = Math.floor(x / gridWidth);
+        const yPos = Math.floor(y / gridHeight);
 
-        dispatch(setSelectionStart(selectionStart));
-        dispatch(setSelectionEnd(selectionEnd));
+        dispatch(setFocusedTrack(parentSvg.attributes.track.value - 0));
+        dispatch(setFocusedColumn(xPos));
+        dispatch(setFocusedRow(yPos));
+        if (!e.shiftKey) dispatch(setSelectionStart(xPos));
+        dispatch(setSelectionEnd(xPos));
       } else {
         dispatch(clearSelection());
       }
@@ -100,18 +86,14 @@ function App() {
 
     window.addEventListener("mousemove", (e) => {
       if (ismousedown) {
-        const scroll = document.getElementById("App").scrollLeft;
-        selectionEnd = gridPositions.findIndex((v) => v >= e.x + scroll) - 1;
-        dispatch(setSelectionEnd(selectionEnd));
+        const app = document.getElementById("App");
+        const x = e.pageX + app.scrollLeft - left;
+        const y = e.pageY + app.scrollTop - top;
 
-        let focusedCol = document.activeElement.attributes.col?.value;
-        if (focusedCol !== undefined) {
-          let dif = parseInt(selectionEnd) - focusedCol;
-          if (dif !== 0) {
-            shiftFocusBy(6 * dif);
-            updateFocus(e, dispatch, true);
-          }
-        }
+        const xPos = Math.floor(x / gridWidth);
+        const yPos = Math.floor(y / gridHeight);
+        dispatch(setSelectionEnd(xPos));
+        dispatch(setFocusedColumn(xPos));
       }
     });
 
@@ -127,11 +109,16 @@ function App() {
         className="home-body"
         style={{
           display: "grid",
-          gridTemplateRows: "40px repeat(5, 40px auto)",
+          gridTemplateRows: `70px repeat(${numberOfTracks}, 50px 200px)`,
         }}
       >
         <Beat />
-        <Track track={0}></Track>
+        {Array(numberOfTracks)
+          .fill(0)
+          .map((_, i) => (
+            <Track track={i} key={i}></Track>
+          ))}
+
         <Selection></Selection>
       </div>
       <Overlay
@@ -146,6 +133,10 @@ function App() {
 }
 
 function Overlay({ onPlay = undefined, onStop = undefined }) {
+  const dispatch = useDispatch();
+
+  const { isPlaying } = useSelector((state) => state.state);
+
   return (
     <div
       className="overlay"
@@ -155,17 +146,28 @@ function Overlay({ onPlay = undefined, onStop = undefined }) {
     >
       <div className="overlay-inner">
         <div
+          onClick={() => dispatch(addTrack())}
+          disabled
+          className="overlay-button play-button"
+        >
+          <Add />
+        </div>
+        <div
           onClick={() => onPlay?.()}
           tabIndex={-1}
           disabled
-          className="overlay-button play-button"
+          className={`overlay-button play-button ${
+            isPlaying ? "overlay-button-disabled" : ""
+          }`}
         >
           <PlayArrow />
         </div>
         <div
           onClick={() => onStop?.()}
           disabled
-          className="overlay-button stop-button"
+          className={`overlay-button stop-button ${
+            !isPlaying ? "overlay-button-disabled" : ""
+          }`}
         >
           <Stop />
         </div>
@@ -199,11 +201,9 @@ function Beat() {
           style={{
             margin: "auto",
             marginTop: 0,
-            width: 1 + (col === i),
+            width: 2,
             height: beat_size,
             backgroundColor: col === i ? "#b6ec4b" : "white",
-            gridColumn: 1 + i,
-            gridRow: 1,
           }}
         ></div>
       );
@@ -227,7 +227,17 @@ function Beat() {
     }
   });
 
-  return <>{beats}</>;
+  return (
+    <div
+      style={{
+        gridColumn: 1,
+        display: "flex",
+        width: gridWidth * numberOfBars * notesPerBar,
+      }}
+    >
+      {beats}
+    </div>
+  );
 }
 
 function Lingon() {
@@ -236,25 +246,30 @@ function Lingon() {
 
 function Selection() {
   let { start, end } = useSelector((state) => state.selection);
-  if (start === end) return <div></div>;
-
-  if (end < start) {
-    let tmp = end;
-    end = start;
-    start = tmp;
-  }
+  let focusedTrack = useSelector((state) => state.state.focusedTrack);
+  let isPlaying = useSelector((state) => state.state.isPlaying);
+  console.log("se", start, end, focusedTrack, isPlaying);
   start = Math.max(start, 0);
   return (
     <div
       style={{
-        gridRow: 3,
-        gridColumn: `${start + 1} / ${end + 1}`,
-        marginTop: -7,
-        marginBottom: -7,
+        gridRow: 2 * focusedTrack + 3,
+        gridColumn: 1,
+        marginTop: -6,
+        width: 250,
+        height: 6 * gridHeight + 8,
+        left: 0,
+        display: isPlaying ? "none" : "initial",
+        pointerEvents: "none",
+        transformOrigin: "left",
+        transform: `translateX(${start * gridWidth}px) scaleX(${
+          ((end - start) * gridWidth) / 250
+        })`,
         backgroundColor: "#bb97e710",
         borderTop: "2px solid #bb97e7",
         borderBottom: "2px solid #bb97e7",
-        // backgroundColor: "red",
+        transitionProperty: "transform",
+        transitionDuration: "0.1s",
       }}
     ></div>
   );

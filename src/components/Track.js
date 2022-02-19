@@ -1,19 +1,27 @@
 // import logo from "./logo.svg";
 // import "./App.css";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { connect } from "react-redux";
 import { listInstruments } from "../audio/context";
 import { setInstrument } from "../redux/noteMap";
+import {
+  setFocusedColumn,
+  setFocusedRow,
+  setFocusedTrack,
+} from "../redux/state";
 
 const scale = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
+export const gridWidth = 17;
+export const gridHeight = 23;
+export const padding = gridHeight;
 
 function Slot({ track = 0, row = 0, col = 0, bar = 0 }) {
   const value = useSelector(
     (state) => state.noteMap.present[track][[col, row]]
   );
-
+  console.log("redraw");
   return (
     <div
       track={track}
@@ -58,18 +66,12 @@ function Bar({ track, bar, isLast }) {
   return <>{cols}</>;
 }
 
-function Track({ track = 0, tuning = [50, 55, 60, 65, 69, 74] }) {
-  const numberOfBars = useSelector((state) => state.config.numberOfBars);
-  let bars = Array(numberOfBars).fill(0);
-  bars = bars.map((_, i) => (
-    <Bar track={track} key={i} bar={i} isLast={i === numberOfBars - 1}></Bar>
-  ));
-
+function Track({ track = 0 }) {
   return (
     <>
       <Tuning track={track} />
       <InstrumentSelect track={track} />
-      {bars}
+      <TrackSvg track={track} />
     </>
   );
 }
@@ -103,23 +105,136 @@ function InstrumentSelect({ track }) {
   );
 }
 
-function Tuning({ track }) {
-  const tuning = useSelector((state) => state.noteMap.present[track].tuning);
+function Marker({ track = 0 }) {
+  const { focusedRow, focusedColumn, focusedTrack, isPlaying } = useSelector(
+    (store) => store.state
+  );
+  // console.log(focusedColumn, focusedRow, focusedTrack, "on");
+  if (track !== focusedTrack) return null;
+  return (
+    <div
+      style={{
+        position: "absolute",
+        transform: `translate(${focusedColumn * gridWidth}px, ${
+          focusedRow * gridHeight - 1
+        }px)`,
+        top: 0,
+        left: 0,
+        borderRadius: 5,
+        opacity: isPlaying ? 0 : 1,
+        width: gridWidth - 3,
+        height: gridHeight - 2,
+        border: "2px solid white",
+        pointerEvents: "none",
+        transitionProperty: "transform",
+        transitionDuration: "0.1s",
+      }}
+    ></div>
+  );
+}
 
-  let scale_chars = tuning.map((i) => scale[(i + 2) % scale.length]);
+function TrackSvg({ track = 0 }) {
+  const numberOfBars = useSelector((state) => state.config.numberOfBars);
+  const notesPerBar = useSelector((state) => state.config.notesPerBar);
+  const notes = useSelector((state) => state.noteMap.present[track]);
+
+  const colors = [
+    "#bb97e744",
+    "#bb97e760",
+    "#bb97e773",
+    "#bb97e773",
+    "#bb97e760",
+    "#bb97e744",
+  ];
+  const width = gridWidth * numberOfBars * notesPerBar;
+
+  const svgref = useRef(null);
+
+  let ds = Array(6)
+    .fill("")
+    .map((_, i) => `M 0 ${i * gridHeight + padding / 2}`);
+  let texts = [];
+
+  Object.entries(notes)
+    .filter(([key, _]) => key.includes(","))
+    .map(([key, val]) => [...key.split(","), val])
+    .filter(([col, row, val]) => val !== "" && val !== undefined)
+    .sort(([col, row, val], [col2, row2, val2]) => col - col2)
+    .forEach(([col, row, val]) => {
+      const h = row * gridHeight + padding / 2;
+      const l = col * gridWidth + 2;
+      const r = l + gridWidth - 2;
+      ds[row] = ds[row] + `T ${l} ${h} M ${r} ${h}`;
+      texts.push(
+        <text
+          x={col * gridWidth + gridWidth / 2 + 1}
+          y={row * gridHeight + gridHeight / 2}
+          fill="white"
+          fontSize={(val + "").length === 1 ? 14 : 12}
+          width={gridWidth}
+          height={gridHeight}
+          textAnchor={"middle"}
+          alignmentBaseline={"central"}
+        >
+          {val}
+        </text>
+      );
+    });
+
+  return (
+    <div
+      ref={svgref}
+      style={{
+        position: "relative",
+        gridRow: track * 2 + 3,
+        gridColumn: 1,
+      }}
+    >
+      <Marker track={track}></Marker>
+      <svg
+        track={track}
+        height={gridHeight * 5 + padding}
+        width={gridWidth * numberOfBars * notesPerBar}
+      >
+        {ds.map((d, i) => (
+          <path d={d + `H ${width}`} stroke={colors[i]} strokeWidth={2}></path>
+        ))}
+
+        {Array(numberOfBars + 1)
+          .fill(0)
+          .map((_, i) => (
+            <path
+              d={`M ${notesPerBar * i * gridWidth} 0 T ${
+                notesPerBar * i * gridWidth
+              } ${gridHeight * 5 + padding}`}
+              stroke={"#bb97e7"}
+              strokeWidth={2}
+            ></path>
+          ))}
+        {texts}
+      </svg>
+    </div>
+  );
+}
+
+function Tuning({ track }) {
+  const tuning = useSelector((state) => state.noteMap.present[track]);
+  console.log(track, tuning);
+  let scale_chars = tuning.tuning.map((i) => scale[(i + 2) % scale.length]);
 
   return (
     <div
       style={{
         gridRow: track * 2 + 3,
-        gridColumn: "1",
-        height: 135,
+        gridColumn: 1,
+        height: gridHeight * 6,
+        width: 20,
         display: "flex",
         color: "white",
         flexDirection: "column",
         alignContent: "stretch",
         justifyContent: "space-between",
-        marginLeft: -50,
+        marginLeft: -25,
       }}
     >
       {scale_chars.map((v, i) => (

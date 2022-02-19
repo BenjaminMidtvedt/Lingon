@@ -58,13 +58,21 @@ function handleDigit(e: Event, dispatch) {
 }
 
 function handleTrackString(e, dispatch) {
+  const [track, col, row] = getActiveIndex();
+
   if (e.key === " ") {
     const { start, end } = store.getState().selection;
     if (start !== end) {
-      return dispatch(clearRange({ start, end }));
+      return dispatch(clearRange({ start, end, track }));
     }
   }
   handleDigit(e, dispatch);
+}
+
+function updateSelection(e, dispatch) {
+  const [track, col, row] = getActiveIndex();
+  if (!e.shiftKey) dispatch(setSelectionStart(col));
+  dispatch(setSelectionEnd(col));
 }
 
 function handleArrow(e, dispatch) {
@@ -73,7 +81,7 @@ function handleArrow(e, dispatch) {
   else if (e.key === "ArrowDown") shiftFocusDown(e);
   else if (e.key === "ArrowRight") shiftFocusRight(e);
 
-  updateFocus(e, dispatch);
+  updateSelection(e, dispatch);
   e.preventDefault();
   e.stopImmediatePropagation();
   e.stopPropagation();
@@ -82,87 +90,41 @@ function handleArrow(e, dispatch) {
 function shiftFocusUp({ ctrlKey, altKey }) {
   const [track, col, row] = getActiveIndex();
   if (row === 0) return;
-  shiftFocusBy(-1);
+  store.dispatch(setFocusedRow(row - 1));
 }
 
 function shiftFocusDown({ ctrlKey, altKey }) {
   const [track, col, row] = getActiveIndex();
   if (row >= 5) return;
-  shiftFocusBy(1);
+  store.dispatch(setFocusedRow(row + 1));
 }
 
 function shiftFocusRight({ ctrlKey, altKey }) {
   const [track, col, row] = getActiveIndex();
   if (ctrlKey) shiftBar();
-  else shiftFocusBy(6);
+  else store.dispatch(setFocusedColumn(col + 1));
 }
 
 function shiftFocusLeft({ ctrlKey, altKey }) {
   const [track, col, row] = getActiveIndex();
   if (ctrlKey) shiftBar(false);
-  else shiftFocusBy(-6);
-}
-
-export function shiftFocusBy(i) {
-  //add all elements we want to include in our selection
-  if (document.activeElement) {
-    const slots = Array.from(document.getElementsByClassName("slot"));
-    const index = slots.indexOf(document.activeElement);
-    if (index > -1) {
-      var nextElement = slots[index + i] || slots[index];
-      nextElement.focus();
-    }
-  }
+  else store.dispatch(setFocusedColumn(Math.max(col - 1, 0)));
 }
 
 export function shiftBar(forward = true) {
   //add all elements we want to include in our selection
   const notesPerBar = store.getState().config.notesPerBar;
-  if (document.activeElement) {
-    const row = parseInt(document.activeElement.attributes.row.value);
-    const slots = Array.from(document.getElementsByClassName("slot"));
-    if (!forward) {
-      slots.reverse();
-    }
-    const elemIndex = slots.indexOf(document.activeElement);
+  const [track, col, row] = getActiveIndex();
+  let distance = notesPerBar - (col % notesPerBar);
+  if (!forward) distance = distance - notesPerBar;
+  if (!forward && distance === 0) distance -= notesPerBar;
 
-    let index =
-      slots
-        .slice(elemIndex + 1, -1)
-        .findIndex(
-          (e) =>
-            parseInt(e.attributes.col.value) % notesPerBar === 0 &&
-            parseInt(e.attributes.row.value) % notesPerBar === row
-        ) +
-      elemIndex +
-      1;
-
-    if (index > -1) {
-      var nextElement = slots[index] || document.activeElement;
-      nextElement.focus();
-    }
-  }
-}
-
-export function updateFocus(e, dispatch, ignoreShift = false) {
-  const active_el = document.activeElement;
-
-  let [track, col, row] = getActiveIndex();
-
-  dispatch(setFocusedColumn(col));
-  dispatch(setFocusedRow(row));
-  dispatch(setFocusedTrack(track));
-
-  dispatch(setSelectionEnd(col));
-  if (!ignoreShift && !e.shiftKey) dispatch(setSelectionStart(col));
+  store.dispatch(setFocusedColumn(Math.max(distance + col, 0)));
 }
 
 export function getActiveIndex() {
-  const active_el = document.activeElement;
-  let row = parseInt(active_el.attributes.row.value);
-  let col = parseInt(active_el.attributes.col.value);
-  let track = parseInt(active_el.attributes.track?.value);
-  return [track, col, row];
+  const { focusedRow, focusedColumn, focusedTrack } = store.getState().state;
+  return [focusedTrack, focusedColumn, focusedRow];
 }
 
 export function copySelection(e, dispatch) {
@@ -185,8 +147,9 @@ export function copySelection(e, dispatch) {
 
 export function cutSelection(e, dispatch) {
   const [start, end] = getSelectionStartEnd();
+  const [track, col, row] = getActiveIndex();
   copySelection(e, dispatch);
-  dispatch(clearRange({ start, end }));
+  dispatch(clearRange({ start, end, track }));
 }
 
 export function pasteData(e, dispatch) {

@@ -16,8 +16,7 @@ export const selection = createSlice({
       return state;
     },
     clearSelection: (state, action) => {
-      state.start = 0;
-      state.end = 0;
+      state.start = state.end;
       return state;
     },
   },

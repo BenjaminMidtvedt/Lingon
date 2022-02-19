@@ -8,15 +8,15 @@ const characters = [" ", "*"];
 
 let playingNotes = [];
 
+const defaultTrack = () => ({
+  tuning: [50, 55, 60, 65, 69, 74].reverse(),
+  instrument: 0,
+});
+
 const initialState = loadState();
 export const noteMap = createSlice({
   name: "noteMap",
-  initialState: initialState?.noteMap || [
-    {
-      tuning: [50, 55, 60, 65, 69, 74].reverse(),
-      instrument: 0,
-    },
-  ],
+  initialState: initialState?.noteMap || [defaultTrack()],
   reducers: {
     writeNote: (state, action) => {
       const { id, note } = action.payload;
@@ -64,13 +64,12 @@ export const noteMap = createSlice({
     },
 
     clearRange: (state, { payload }) => {
-      let { start, end } = payload;
+      let { start, end, track } = payload;
       if (end < start) {
         let tmp = end;
         end = start;
         start = tmp;
       }
-      const [track, _col, _row] = getActiveIndex();
       for (let col = start; col < end; col++) {
         for (let row = 0; row < 6; row++) {
           state[track][[col, row]] = "";
@@ -82,10 +81,20 @@ export const noteMap = createSlice({
     setInstrument: (state, { payload }) => {
       state[payload.track].instrument = payload.id;
     },
+
+    addTrack: (state) => {
+      state.push(defaultTrack());
+    },
   },
 });
 
-export const { writeNote, writeSlice, clearNote, clearRange, setInstrument } =
-  noteMap.actions;
+export const {
+  writeNote,
+  writeSlice,
+  clearNote,
+  clearRange,
+  setInstrument,
+  addTrack,
+} = noteMap.actions;
 
 export default noteMap.reducer;

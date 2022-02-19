@@ -92,7 +92,7 @@ export function Play(start = 0) {
 
           if (playingNotesId[row]) {
             const [slotId, startTime] = playingNotesId[row];
-            highlightNote(slotId, startTime, time);
+            // highlightNote(slotId, startTime, time);
           }
           if (val === "*") {
             playingNotes[row] = undefined;

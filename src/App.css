@@ -211,7 +211,7 @@ body {
 }
 
 .overlay-inner {
-  height: 70px;
+  height: 50px;
   width: 400px;
   background-color: #ba97e70c;
   box-shadow: #121212 6px 10px 12px 5px;
@@ -243,8 +243,8 @@ body {
 }
 
 .overlay-button > svg {
-  font-size: 40px !important;
-  margin-top: 15px;
+  font-size: 30px !important;
+  margin-top: 10px;
 }
 
 .play-button > svg {
@@ -285,5 +285,25 @@ body {
 }
 
 .slot-highlight {
-  color: #dac6f2 !important;
+  color: #aaa !important;
+}
+
+svg text {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.overlay-button-disabled,
+.overlay-button-disabled:hover,
+.overlay-button-disabled:active {
+  pointer-events: none;
+  background-color: transparent;
+  /* fill: gray !important; */
+}
+
+.overlay-button-disabled > svg {
+  /* background-color: transparent; */
+  fill: gray !important;
 }
