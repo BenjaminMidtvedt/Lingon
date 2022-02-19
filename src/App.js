@@ -30,17 +30,7 @@ import {
   keypressHandler,
 } from "./redux/handlers";
 
-function shiftFocusBy(i) {
-  //add all elements we want to include in our selection
-  if (document.activeElement) {
-    const slots = Array.from(document.getElementsByClassName("slot"));
-    const index = slots.indexOf(document.activeElement);
-    if (index > -1) {
-      var nextElement = slots[index + i] || slots[index];
-      nextElement.focus();
-    }
-  }
-}
+const version = require("../package.json").version;
 
 function App() {
   const dispatch = useDispatch();
@@ -241,7 +231,11 @@ function Beat() {
 }
 
 function Lingon() {
-  return <span className="lingon">Lingon</span>;
+  return (
+    <span className="lingon">
+      Lingon <span className="version">v{version + ""}</span>
+    </span>
+  );
 }
 
 function Selection() {

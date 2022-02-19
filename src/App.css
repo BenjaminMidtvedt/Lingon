@@ -159,6 +159,12 @@ body {
   left: 100px;
   top: 20px;
 }
+.version {
+  font-size: 17px;
+  letter-spacing: normal;
+  margin-left: -20px;
+  font-weight: 200;
+}
 
 .slot-text {
   /* font-family: "Dongle", sans-serif; */
