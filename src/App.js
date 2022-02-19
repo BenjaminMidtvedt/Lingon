@@ -80,10 +80,14 @@ function App() {
         const x = e.pageX + app.scrollLeft - left;
         const y = e.pageY + app.scrollTop - top;
 
-        const xPos = Math.floor(x / gridWidth);
+        const xPos = Math.max(Math.floor(x / gridWidth), 0);
         const yPos = Math.floor(y / gridHeight);
         dispatch(setSelectionEnd(xPos));
         dispatch(setFocusedColumn(xPos));
+
+        e.stopImmediatePropagation();
+        e.stopPropagation();
+        e.preventDefault();
       }
     });
 
@@ -201,20 +205,22 @@ function Beat() {
 
   useEffect(() => {
     const { isPlaying } = store.getState().state;
-    if (
-      focusedRef.current.getBoundingClientRect().right >
-      window.innerWidth - 100
-    ) {
-      focusedRef.current.scrollIntoView({
-        inline: isPlaying ? "center" : "center",
-      });
-    }
+    try {
+      if (
+        focusedRef.current.getBoundingClientRect().right >
+        window.innerWidth - 100
+      ) {
+        focusedRef.current.scrollIntoView({
+          inline: isPlaying ? "center" : "center",
+        });
+      }
 
-    if (focusedRef.current.getBoundingClientRect().left < 100) {
-      focusedRef.current.scrollIntoView({
-        inline: isPlaying ? "center" : "center",
-      });
-    }
+      if (focusedRef.current.getBoundingClientRect().left < 100) {
+        focusedRef.current.scrollIntoView({
+          inline: isPlaying ? "center" : "center",
+        });
+      }
+    } catch {}
   });
 
   return (
@@ -239,7 +245,10 @@ function Lingon() {
 }
 
 function Selection() {
-  let { start, end } = useSelector((state) => state.selection);
+  let { start, end } = useSelector(
+    (state) => state.selection,
+    (a, b) => a.start === b.start && a.end === b.end
+  );
   let focusedTrack = useSelector((state) => state.state.focusedTrack);
   let isPlaying = useSelector((state) => state.state.isPlaying);
   console.log("se", start, end, focusedTrack, isPlaying);
