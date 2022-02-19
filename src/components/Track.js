@@ -175,6 +175,7 @@ function TrackSvg({ track = 0 }) {
           height={gridHeight}
           textAnchor={"middle"}
           alignmentBaseline={"central"}
+          key={col + "," + row}
         >
           {val}
         </text>
@@ -197,13 +198,19 @@ function TrackSvg({ track = 0 }) {
         width={gridWidth * numberOfBars * notesPerBar}
       >
         {ds.map((d, i) => (
-          <path d={d + `H ${width}`} stroke={colors[i]} strokeWidth={2}></path>
+          <path
+            key={i}
+            d={d + `H ${width}`}
+            stroke={colors[i]}
+            strokeWidth={2}
+          ></path>
         ))}
 
         {Array(numberOfBars + 1)
           .fill(0)
           .map((_, i) => (
             <path
+              key={i}
               d={`M ${notesPerBar * i * gridWidth} 0 T ${
                 notesPerBar * i * gridWidth
               } ${gridHeight * 5 + padding}`}
