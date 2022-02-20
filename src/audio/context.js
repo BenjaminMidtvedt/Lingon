@@ -74,7 +74,7 @@ export function Play(start = 0) {
   noteMap.present.forEach((track, trackid) => {
     const playingNotes = Array(7);
     const playingNotesId = {};
-    const { tuning } = track;
+    const { tuning, letNotesRing } = track;
     const instrumentId = track.instrument || 0;
     const out = player.loader.findInstrument(instrumentId);
 
@@ -88,7 +88,12 @@ export function Play(start = 0) {
         .sort(([col, row, val], [col2, row2, val2]) => col - col2)
         .forEach(([col, row, val]) => {
           const time = startTime + ((col - start) / 120 / 4) * 60;
-          playingNotes[row]?.stop?.(time);
+
+          if (letNotesRing) playingNotes[row]?.stop?.(time);
+          else {
+            playingNotes.forEach((v) => v?.stop?.(time));
+            playingNotes.fill(undefined);
+          }
 
           if (playingNotesId[row]) {
             const [slotId, startTime] = playingNotesId[row];

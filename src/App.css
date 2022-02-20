@@ -313,3 +313,12 @@ svg text {
   /* background-color: transparent; */
   fill: gray !important;
 }
+
+.checkbox {
+  padding: 6px;
+  margin-left: 10px;
+}
+
+.checkbox input {
+  background-color: transparent;
+}

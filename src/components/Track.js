@@ -5,7 +5,7 @@ import { useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { connect } from "react-redux";
 import { listInstruments } from "../audio/context";
-import { setInstrument } from "../redux/noteMap";
+import { setInstrument, setLetNotesRing } from "../redux/noteMap";
 import {
   setFocusedColumn,
   setFocusedRow,
@@ -70,7 +70,7 @@ function Track({ track = 0 }) {
   return (
     <>
       <Tuning track={track} />
-      <InstrumentSelect track={track} />
+      <TrackSettings track={track} />
       <TrackSvg track={track} />
     </>
   );
@@ -105,6 +105,25 @@ function InstrumentSelect({ track }) {
   );
 }
 
+function SetLetNotesRing({ track }) {
+  const letNotesRing = useSelector(
+    (store) => store.noteMap.present[track].letNotesRing
+  );
+  const dispatch = useDispatch();
+  return (
+    <div className="checkbox">
+      <input
+        type="checkbox"
+        onChange={(v) => {
+          dispatch(setLetNotesRing({ track, value: !letNotesRing }));
+        }}
+        checked={letNotesRing}
+      ></input>
+      Let notes ring
+    </div>
+  );
+}
+
 function Marker({ track = 0 }) {
   const { focusedRow, focusedColumn, focusedTrack, isPlaying } = useSelector(
     (store) => store.state
@@ -130,6 +149,15 @@ function Marker({ track = 0 }) {
         transitionDuration: "0.05s",
       }}
     ></div>
+  );
+}
+
+function TrackSettings({ track = 0 }) {
+  return (
+    <div style={{ display: "flex" }}>
+      <InstrumentSelect track={track} />
+      <SetLetNotesRing track={track} />
+    </div>
   );
 }
 

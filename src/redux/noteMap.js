@@ -11,9 +11,10 @@ let playingNotes = [];
 const defaultTrack = () => ({
   tuning: [50, 55, 60, 65, 69, 74].reverse(),
   instrument: 0,
+  letNotesRing: false,
 });
 
-const initialState = loadState();
+const initialState = undefined; //loadState();
 export const noteMap = createSlice({
   name: "noteMap",
   initialState: initialState?.noteMap || [defaultTrack()],
@@ -85,6 +86,11 @@ export const noteMap = createSlice({
     addTrack: (state) => {
       state.push(defaultTrack());
     },
+
+    setLetNotesRing: (state, { payload }) => {
+      state[payload.track].letNotesRing = payload.value;
+      return state;
+    },
   },
 });
 
@@ -95,6 +101,7 @@ export const {
   clearRange,
   setInstrument,
   addTrack,
+  setLetNotesRing,
 } = noteMap.actions;
 
 export default noteMap.reducer;
