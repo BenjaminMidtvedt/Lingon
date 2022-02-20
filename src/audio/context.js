@@ -63,15 +63,18 @@ export function playTrackColumn(track, column) {
   });
 }
 
-export function Play(start = 0) {
+export function Play(start = 0, playActiveTrack = false) {
   store.dispatch(setPlayingTrue());
 
-  const { noteMap } = store.getState();
+  const { noteMap, state } = store.getState();
 
   const startTime = audioContext.currentTime + 0.01;
   let endTime = startTime;
 
-  noteMap.present.forEach((track, trackid) => {
+  (playActiveTrack
+    ? [noteMap.present[state.focusedTrack]]
+    : noteMap.present
+  ).forEach((track, trackid) => {
     const playingNotes = Array(7);
     const playingNotesId = {};
     const { tuning, letNotesRing } = track;

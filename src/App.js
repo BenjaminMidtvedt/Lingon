@@ -116,8 +116,8 @@ function App() {
         <Selection></Selection>
       </div>
       <Overlay
-        onPlay={() => {
-          Play(store.getState().selection.end);
+        onPlay={(playActiveTrack) => {
+          Play(store.getState().selection.end, playActiveTrack);
         }}
         onStop={StopPlay}
       />
@@ -147,7 +147,7 @@ function Overlay({ onPlay = undefined, onStop = undefined }) {
           <Add />
         </div>
         <div
-          onClick={() => onPlay?.()}
+          onClick={() => onPlay?.(true)}
           tabIndex={-1}
           disabled
           className={`overlay-button play-button ${
@@ -155,6 +155,22 @@ function Overlay({ onPlay = undefined, onStop = undefined }) {
           }`}
         >
           <PlayArrow />
+        </div>
+        <div
+          onClick={() => onPlay?.(false)}
+          tabIndex={-1}
+          disabled
+          className={`overlay-button play-button ${
+            isPlaying ? "overlay-button-disabled" : ""
+          }`}
+        >
+          <PlayArrow style={{ transform: "translate(-9px, -7px)" }} />
+          <PlayArrow
+            style={{
+              position: "absolute",
+              transform: "translate(-21px, 7px)",
+            }}
+          />
         </div>
         <div
           onClick={() => onStop?.()}
