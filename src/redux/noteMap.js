@@ -11,10 +11,10 @@ let playingNotes = [];
 const defaultTrack = () => ({
   tuning: [50, 55, 60, 65, 69, 74].reverse(),
   instrument: 0,
-  letNotesRing: false,
+  letNotesRing: true,
 });
 
-const initialState = undefined; //loadState();
+const initialState = loadState();
 export const noteMap = createSlice({
   name: "noteMap",
   initialState: initialState?.noteMap || [defaultTrack()],
