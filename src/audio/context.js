@@ -94,8 +94,11 @@ export function Play(start = 0, playActiveTrack = false) {
 
           if (letNotesRing) playingNotes[row]?.stop?.(time);
           else {
-            playingNotes.forEach((v) => v?.stop?.(time));
-            playingNotes.fill(undefined);
+            playingNotes.forEach((v, i) => {
+              if (playingNotesId[i]?.[1] === time) return v;
+              v?.stop?.(time);
+              playingNotes[i] = undefined;
+            });
           }
 
           if (playingNotesId[row]) {
