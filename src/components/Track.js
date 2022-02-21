@@ -13,7 +13,7 @@ import {
 } from "../redux/state";
 
 const scale = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"];
-export const gridWidth = 17;
+export const gridWidth = 18;
 export const gridHeight = 23;
 export const padding = gridHeight;
 
@@ -141,9 +141,9 @@ function Marker({ track = 0 }) {
         left: 0,
         borderRadius: 5,
         opacity: isPlaying ? 0 : 1,
-        width: gridWidth - 3,
-        height: gridHeight - 2,
-        border: "2px solid white",
+        width: gridWidth - 4,
+        height: gridHeight - 3,
+        border: "3px solid white",
         pointerEvents: "none",
         transitionProperty: "transform",
         transitionDuration: "0.05s",
@@ -198,7 +198,7 @@ function TrackSvg({ track = 0 }) {
           x={col * gridWidth + gridWidth / 2 + 1}
           y={row * gridHeight + gridHeight / 2}
           fill="white"
-          fontSize={(val + "").length === 1 ? 14 : 12}
+          fontSize={(val + "").length === 1 ? 16 : 13}
           width={gridWidth}
           height={gridHeight}
           textAnchor={"middle"}
